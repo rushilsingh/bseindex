@@ -1,4 +1,6 @@
 import requests
+import io
+import zipfile
 import datetime
 
 class BhavCopy(object):
@@ -12,8 +14,10 @@ class BhavCopy(object):
         year = current [0][2:]
         today = day+month+year
         url = "https://www.bseindia.com/download/BhavCopy/Equity/EQ"+today+"_CSV.ZIP"
-        response = requests.get(url)
-        print response
+        response = requests.get(url, stream=True)
+        z = zipfile.ZipFile(io.BytesIO(response.content))
+        z.extractall()
+
 
 bhavcopy = BhavCopy()
 
