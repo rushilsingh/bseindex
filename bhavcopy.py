@@ -11,10 +11,7 @@ class BhavCopy(object):
         month = current[1]
         year = current [0][2:]
         today = day+month+year
-        print today
-        print type(today)
         url = "https://www.bseindia.com/download/BhavCopy/Equity/EQ"+today+"_CSV.ZIP"
-        print url
         response = requests.get(url)
         print response
 
