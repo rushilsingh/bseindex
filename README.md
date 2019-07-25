@@ -1,0 +1,2 @@
+# bseindex
+Stock Index application
