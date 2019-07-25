@@ -1,3 +1,4 @@
+import os
 import requests
 import io
 import zipfile
@@ -17,6 +18,11 @@ class BhavCopy(object):
         response = requests.get(url, stream=True)
         z = zipfile.ZipFile(io.BytesIO(response.content))
         z.extractall()
+        with open("EQ"+today+".CSV") as f:
+            text = f.read()
+            
+        os.unlink("EQ"+today+".CSV")
+        print text
 
 
 bhavcopy = BhavCopy()
