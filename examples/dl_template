@@ -1,0 +1,9 @@
+Value Container_Id ([a-z0-9]+)
+Value Image (\S+)
+Value Name (\S+)
+
+Start
+  ^${Container_Id}\s+${Image}\s+${Name} -> Record
+
+EOF
+

@@ -1,0 +1,12 @@
+Value Filldown Name (.+)
+Value Filldown Flag (True|False)
+Value Rank (.+)
+
+Start
+  ^Names\s+: ${Name}
+  ^\s+Coupling flag\s+: ${Flag}
+  ^\s+Rank:
+  ^\s+\S*\s+:? ${Rank} -> Record
+
+EOF
+

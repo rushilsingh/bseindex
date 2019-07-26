@@ -1,0 +1,7 @@
+Value Container ([a-zA-Z0-9_.-]+)
+
+Start
+  ^${Container}.* -> Record
+
+EOF
+

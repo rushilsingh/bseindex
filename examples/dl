@@ -1,0 +1,5 @@
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                      PORTS               NAMES
+95fc9953e731        24d48ae3a433        "python3"           15 minutes ago      Exited (0) 15 minutes ago                       goofy_ramanujan
+c44ec768ec20        95270569baf6        "/bin/bash"         45 minutes ago      Up 45 minutes                                   serene_davinci
+67abaf544310        95270569baf6        "ls"                46 minutes ago      Exited (0) 46 minutes ago                       reverent_kalam
+afb4d0cc2ad3        95270569baf6        "/bin/bash"         4 hours ago         Exited (0) 4 hours ago                          nostalgic_mcclintock

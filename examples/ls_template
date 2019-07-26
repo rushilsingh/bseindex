@@ -1,0 +1,19 @@
+Value Filldown Total (\d+)
+Value Permissions ([d-]([r-][w-][x-]){3})
+Value Links (\d+)
+Value Group (\S+)
+Value User (\S+)
+Value Size (\d+)
+Value Month ([A-Z][a-z][a-z])
+Value Day ([1-3]*[0-9])
+Value Time (([0-2][0-9]:[0-5][0-9])|(\d+))
+Value Required Name ((.*[^.])|([^.].*))
+
+Start
+  ^total ${Total} -> Table
+
+Table
+  ^${Permissions}\s+${Links}\s+${Group}\s+${User}\s+${Size}\s+${Month}\s+${Day}\s+${Time}\s${Name} -> Record
+
+EOF
+

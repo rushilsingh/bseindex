@@ -1,0 +1,10 @@
+#Linux CLPSTPDFC115 3.19.0-25-generic #26~14.04.1-Ubuntu SMP Fri Jul 24 21:16:20 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux
+Value Name (\S+)
+Value Kernel (\d+\.\d+\.\d+-\d+-\S+)
+Value Architecture ([ix]\d+_?\d+)
+
+Start
+  ^\S+\s${Name}\s${Kernel}\s#\S+\s\S+\s[A-Z][a-z]+\s[A-Z][a-z]+\s\d+\s\d+:\d+:\d+\s\S+\s\d+\s${Architecture}.* -> Record
+
+EOF
+

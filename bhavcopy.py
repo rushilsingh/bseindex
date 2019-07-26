@@ -55,7 +55,6 @@ class BhavCopy(object):
         command = base_command % inner_command
         os.system(command)
 
-        os.unlink(self.fname)
         with open(self.commands) as f:
             self.text = f.readlines()
 
@@ -64,12 +63,10 @@ class BhavCopy(object):
             line = line.rstrip().rstrip(",")
             line = " ".join(line.split(","))
             parsed_commands += (line) + "\n"
-        os.unlink(self.commands)
         with open(self.commands, "w") as f:
             f.write(parsed_commands)
 
         os.system("cat %s; sleep 5 | redis-cli --pipe" % self.commands)
-        os.unlink(self.commands)
 
 
 if __name__ == "__main__":
