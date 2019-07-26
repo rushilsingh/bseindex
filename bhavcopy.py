@@ -23,10 +23,10 @@ class BhavCopy(object):
         z = zipfile.ZipFile(io.BytesIO(response.content))
         z.extractall()
         with open("EQ"+self.date_string+".CSV") as f:
-            text = f.read()
+            self.text = f.read()
             
         os.unlink("EQ"+self.date_string+".CSV")
-        print text
+        
 
     def get_date_string(self, timedelta=0):
         
@@ -41,4 +41,5 @@ class BhavCopy(object):
         return self.base_url + self.date_string + self.url_postfix
 
 bhavcopy = BhavCopy()
+print(bhavcopy.text)
 
