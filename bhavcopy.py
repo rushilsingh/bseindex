@@ -7,25 +7,25 @@ import datetime
 class BhavCopy(object):
     
     def __init__(self):
-        self.base_url = "https://www.bseindia.com/download/BhavCopy/Equity/EQ"
-        self.url_postfix = "_CSV.ZIP"
+        self.base_url = "https://www.bseindia.com/download/BhavCopy/Equity/EQ{}_CSV.ZIP"
+        self.base_fname = "EQ{}.CSV" 
         response = None
         timedelta = 0
         while(response is None or response.status_code != 200):
             self.date_string = self.get_date_string(timedelta)
-            url = self.get_url()
-            print(url)
-            response = requests.get(url, stream=True)
+            self.url = self.base_url.format(self.date_string)
+            print(self.url)
+            response = requests.get(self.url, stream=True)
             print(response.status_code)
 
             timedelta += 1
-    
+        self.fname = self.base_fname.format(self.date_string)
         z = zipfile.ZipFile(io.BytesIO(response.content))
         z.extractall()
-        with open("EQ"+self.date_string+".CSV") as f:
+        with open(self.fname) as f:
             self.text = f.read()
             
-        os.unlink("EQ"+self.date_string+".CSV")
+        os.unlink(self.fname)
         
 
     def get_date_string(self, timedelta=0):
@@ -38,7 +38,7 @@ class BhavCopy(object):
         return (day+month+year)
     
     def get_url(self):
-        return self.base_url + self.date_string + self.url_postfix
+        return self.base_url.format(self.date_string)
 
 bhavcopy = BhavCopy()
 print(bhavcopy.text)
