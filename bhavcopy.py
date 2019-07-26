@@ -25,7 +25,6 @@ class BhavCopy(object):
         with open(self.fname) as f:
             self.text = f.read()
 
-        print self.fname
         #os.unlink(self.fname)
 
 
@@ -43,24 +42,34 @@ class BhavCopy(object):
 
     def parse(self):
         self.headers = self.text.split()[0].split(",")
-        base_command = """ awk -F, 'BEGIN {OFS=","} %s' """ +  self.fname + """ | sed 's/\\"//g' """
-        inner_command = "{ print \"SET\"%s}"
+        base_command = """ awk -F, 'BEGIN {OFS=","} %s' """ +  self.fname + """ | sed 's/\\"//g' > output.txt """
+        inner_command = "{print \"SET\"%s}"
         columns = ""
         for i in range(len(self.headers)):
-            columns += ",$%s " % (i+1)
+            columns += ",$%s" % (i+1)
 
+
+        self.fname = "output.txt"
         inner_command = inner_command % columns
         command = base_command % inner_command
+        print(command)
         os.system(command)
 
-
         with open(self.fname) as f:
-            self.text = f.read()
+            self.text = f.readlines()
+        
+        parsed_commands = ""
+        for line in self.text:
+            line = line.rstrip().rstrip(",")
+            line = " ".join(line.split(","))
+            parsed_commands += (line) + "\n"
+        print(parsed_commands)
         os.unlink(self.fname)
-        self.fname = "output.txt"
         with open(self.fname, "w") as f:
-            f.write(self.text)
-        os.system("cat %s | python gen_redis_proto.py | redis-cli --pipe" % self.fname)
+            f.write(parsed_commands)
+
+
+        os.system("cat %s | redis-cli --pipe" % self.fname)
 
 
 
