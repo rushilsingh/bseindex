@@ -44,30 +44,7 @@ class BhavCopy(object):
         return self.base_url.format(self.date_string)
 
     def parse(self):
-        self.headers = self.text.split()[0].split(",")
-        base_command = """ awk -F, 'BEGIN {OFS=","} %s' """ +  self.fname + """ | sed 's/\\"//g' > %s """ % self.commands
-        inner_command = "{print \"SET\"%s}"
-        columns = ""
-        for i in range(len(self.headers)):
-            columns += ",$%s" % (i+1)
-
-        inner_command = inner_command % columns
-        command = base_command % inner_command
-        os.system(command)
-
-        with open(self.commands) as f:
-            self.text = f.readlines()
-
-        parsed_commands = ""
-        for line in self.text:
-            line = line.rstrip().rstrip(",")
-            line = " ".join(line.split(","))
-            parsed_commands += (line) + "\n"
-        with open(self.commands, "w") as f:
-            f.write(parsed_commands)
-
-        os.system("cat %s; sleep 5 | redis-cli --pipe" % self.commands)
-
+        pass
 
 if __name__ == "__main__":
     bhavcopy = BhavCopy()
