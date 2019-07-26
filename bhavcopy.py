@@ -9,26 +9,28 @@ class BhavCopy(object):
     def __init__(self):
         self.base_url = "https://www.bseindia.com/download/BhavCopy/Equity/EQ"
         self.url_postfix = "_CSV.ZIP"
-        self.date_string = self.get_date_string()
-        print self.date_string
-        
-        url = self.get_url()
-        response = requests.get(url, stream=True)
-        
-        # TODO:
-        # If response is 404, get yesterday's file
+        response = None
+        timedelta = 0
+        while(response is None or response.status_code != 200):
+            self.date_string = self.get_date_string(timedelta)
+            url = self.get_url()
+            print(url)
+            response = requests.get(url, stream=True)
+            print(response.status_code)
 
+            timedelta += 1
+    
         z = zipfile.ZipFile(io.BytesIO(response.content))
         z.extractall()
         with open("EQ"+self.date_string+".CSV") as f:
-            text = f.read()
+            self.text = f.read()
             
         os.unlink("EQ"+self.date_string+".CSV")
-        print text
-
-    def get_date_string(self):
         
-        now = datetime.datetime.today()
+
+    def get_date_string(self, timedelta=0):
+        
+        now = datetime.datetime.today() - datetime.timedelta(days=timedelta)
         day = str(now.day) if len(str(now.day))==2 else (str(0) + str(now.day))
         month = str(now.month) if len(str(now.month))==2 else (str(0) + str(now.month))
         year = str(now.year)[-2:]
@@ -39,4 +41,5 @@ class BhavCopy(object):
         return self.base_url + self.date_string + self.url_postfix
 
 bhavcopy = BhavCopy()
+print(bhavcopy.text)
 
