@@ -14,10 +14,15 @@ class BhavCopy(object):
         
         url = self.get_url()
         response = requests.get(url, stream=True)
-        
-        # TODO:
-        # If response is 404, get yesterday's file
-
+        timedelta = 0
+        while(response.status_code != 200):
+            timedelta += 1
+            self.date_string = self.get_date_string(timedelta)
+            url = self.get_url()
+            print(url)
+            response = requests.get(url, stream=True)
+            print(response.status_code)
+    
         z = zipfile.ZipFile(io.BytesIO(response.content))
         z.extractall()
         with open("EQ"+self.date_string+".CSV") as f:
@@ -26,9 +31,9 @@ class BhavCopy(object):
         os.unlink("EQ"+self.date_string+".CSV")
         print text
 
-    def get_date_string(self):
+    def get_date_string(self, timedelta=0):
         
-        now = datetime.datetime.today()
+        now = datetime.datetime.today() - datetime.timedelta(days=timedelta)
         day = str(now.day) if len(str(now.day))==2 else (str(0) + str(now.day))
         month = str(now.month) if len(str(now.month))==2 else (str(0) + str(now.month))
         year = str(now.year)[-2:]
