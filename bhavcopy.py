@@ -9,6 +9,7 @@ class BhavCopy(object):
     def __init__(self):
         self.base_url = "https://www.bseindia.com/download/BhavCopy/Equity/EQ{}_CSV.ZIP"
         self.base_fname = "EQ{}.CSV"
+        self.redis_fname = "commands.txt"
         self.response = None
         self.timedelta = 0
 
@@ -44,7 +45,7 @@ class BhavCopy(object):
 
     def parse(self):
         self.headers = self.text.split()[0].split(",")
-        base_command = """ awk -F, 'BEGIN {OFS=","} %s' """ +  self.fname + """ | sed 's/\\"//g' > output.txt """
+        base_command = """ awk -F, 'BEGIN {OFS=","} %s' """ +  self.fname + """ | sed 's/\\"//g' > %s """ % self.redis_fname
         inner_command = "{print \"SET\"%s}"
         columns = ""
         for i in range(len(self.headers)):
@@ -55,8 +56,7 @@ class BhavCopy(object):
         os.system(command)
 
         os.unlink(self.fname)
-        self.fname = "output.txt"
-        with open(self.fname) as f:
+        with open(self.redis_fname) as f:
             self.text = f.readlines()
 
         parsed_commands = ""
@@ -64,12 +64,12 @@ class BhavCopy(object):
             line = line.rstrip().rstrip(",")
             line = " ".join(line.split(","))
             parsed_commands += (line) + "\n"
-        os.unlink(self.fname)
-        with open(self.fname, "w") as f:
+        os.unlink(self.redis_fname)
+        with open(self.redis_fname, "w") as f:
             f.write(parsed_commands)
 
-        os.system("cat %s; sleep 5 | redis-cli --pipe" % self.fname)
-        os.unlink(self.fname)
+        os.system("cat %s; sleep 5 | redis-cli --pipe" % self.redis_fname)
+        os.unlink(self.redis_fname)
 
 
 if __name__ == "__main__":
