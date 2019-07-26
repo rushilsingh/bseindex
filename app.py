@@ -1,6 +1,7 @@
 import cherrypy
 from bhavcopy import BhavCopy
-
+import cherrys
+cherrypy.lib.sessions.RedisSession = cherrys.RedisSession
 
 class App(object):
     @cherrypy.expose
