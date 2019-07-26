@@ -13,19 +13,19 @@ class BhavCopy(object):
         timedelta = 0
         while(response is None or response.status_code != 200):
             self.date_string = self.get_date_string(timedelta)
-            url = self.get_url()
-            print(url)
-            response = requests.get(url, stream=True)
+            self.url = self.base_url.format(self.date_string)
+            print(self.url)
+            response = requests.get(self.url, stream=True)
             print(response.status_code)
 
             timedelta += 1
-        fname = self.base_fname.format(self.date_string)
+        self.fname = self.base_fname.format(self.date_string)
         z = zipfile.ZipFile(io.BytesIO(response.content))
         z.extractall()
-        with open(fname) as f:
+        with open(self.fname) as f:
             self.text = f.read()
             
-        os.unlink(fname)
+        os.unlink(self.fname)
         
 
     def get_date_string(self, timedelta=0):
