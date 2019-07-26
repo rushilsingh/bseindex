@@ -61,11 +61,14 @@ class BhavCopy(object):
         commands = ""
         for record in parsed:
             for key in record:
-                command = "SET " + key +str(index) + " " +record[key] + "\n"
+                val = "\"" + record[key] + "\"" if " " in record[key] else record[key]
+                command = "SET " + key +str(index) + " " + val + "\n"
                 commands += command
-
+            index += 1
         with open(self.commands, "w") as f:
             f.write(commands)
+        os.system("cat %s | redis-cli " % self.commands) 
+
 
 
                     
