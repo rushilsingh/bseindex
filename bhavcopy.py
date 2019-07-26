@@ -3,6 +3,7 @@ import requests
 import io
 import zipfile
 import datetime
+import textfsm
 
 class BhavCopy(object):
 
@@ -44,7 +45,13 @@ class BhavCopy(object):
         return self.base_url.format(self.date_string)
 
     def parse(self):
-        pass
+	template = "bhavcopy_template"
+        with open(template) as f:
+            parser = textfsm.TextFSM(f)
+
+        lists = parser.ParseText(text)
+
+       
 
 if __name__ == "__main__":
     bhavcopy = BhavCopy()
