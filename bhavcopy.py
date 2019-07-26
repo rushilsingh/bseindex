@@ -9,19 +9,16 @@ class BhavCopy(object):
     def __init__(self):
         self.base_url = "https://www.bseindia.com/download/BhavCopy/Equity/EQ"
         self.url_postfix = "_CSV.ZIP"
-        self.date_string = self.get_date_string()
-        print self.date_string
-        
-        url = self.get_url()
-        response = requests.get(url, stream=True)
+        response = None
         timedelta = 0
-        while(response.status_code != 200):
-            timedelta += 1
+        while(response is None or response.status_code != 200):
             self.date_string = self.get_date_string(timedelta)
             url = self.get_url()
             print(url)
             response = requests.get(url, stream=True)
             print(response.status_code)
+
+            timedelta += 1
     
         z = zipfile.ZipFile(io.BytesIO(response.content))
         z.extractall()
