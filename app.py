@@ -1,12 +1,17 @@
 import cherrypy
+from bhavcopy import BhavCopy
 
 
-class HelloWorld(object):
+class App(object):
     @cherrypy.expose
     def index(self):
-        return "Hello world!"
+        return "Bhavcopy contents"
 
 
 if __name__ == '__main__':
-    cherrypy.quickstart(HelloWorld())
+    bhavcopy = BhavCopy()
+    bhavcopy.download()
+    bhavcopy.parse()
+
+    cherrypy.quickstart(App())
 
