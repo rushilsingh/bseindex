@@ -32,6 +32,7 @@ class BhavCopy(object):
         day = str(now.day) if len(str(now.day))==2 else (str(0) + str(now.day))
         month = str(now.month) if len(str(now.month))==2 else (str(0) + str(now.month))
         year = str(now.year)[-2:]
+        year = year if len(year)==2 else (str(0)+year)
         return (day+month+year)
     
     def get_url(self):
