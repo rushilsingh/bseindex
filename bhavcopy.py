@@ -3,6 +3,7 @@ import requests
 import io
 import zipfile
 import datetime
+import textfsm
 
 class BhavCopy(object):
 
@@ -44,33 +45,36 @@ class BhavCopy(object):
         return self.base_url.format(self.date_string)
 
     def parse(self):
-        self.headers = self.text.split()[0].split(",")
-        base_command = """ awk -F, 'BEGIN {OFS=","} %s' """ +  self.fname + """ | sed 's/\\"//g' > %s """ % self.commands
-        inner_command = "{print \"SET\"%s}"
-        columns = ""
-        for i in range(len(self.headers)):
-            columns += ",$%s" % (i+1)
+        template = "bhavcopy_template"
 
-        inner_command = inner_command % columns
-        command = base_command % inner_command
-        os.system(command)
+        with open(template) as f:
+            parser = textfsm.TextFSM(f)
 
-        os.unlink(self.fname)
-        with open(self.commands) as f:
-            self.text = f.readlines()
+        lists = parser.ParseText(self.text)
+        parsed = []
+        for i in xrange(len(lists)):
+            elem = {}
+            for j in xrange(len(parser.header)):
+                elem[parser.header[j]] = lists[i][j]
+            parsed.append(elem)
+        index = 1
+        commands = ""
+        for record in parsed:
+            for key in record:
+                command = "SET " + key +str(index) + " " +record[key] + "\n"
+                commands += command
 
-        parsed_commands = ""
-        for line in self.text:
-            line = line.rstrip().rstrip(",")
-            line = " ".join(line.split(","))
-            parsed_commands += (line) + "\n"
-        os.unlink(self.commands)
         with open(self.commands, "w") as f:
-            f.write(parsed_commands)
+            f.write(commands)
 
-        os.system("cat %s; sleep 5 | redis-cli --pipe" % self.commands)
-        os.unlink(self.commands)
 
+                    
+
+
+
+                
+
+       
 
 if __name__ == "__main__":
     bhavcopy = BhavCopy()

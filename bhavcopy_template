@@ -1,0 +1,12 @@
+Value Code (\d+)
+Value Name ([^,]+)
+Value Open ([1-9.]+)
+Value High ([1-9.]+)
+Value Low ([1-9.]+)
+Value Close ([1-9.]+)
+
+Start
+  ^${Code},${Name},[A-Z]\s*,[A-Z]\s*,${Open}\s*,${High}\s*,${Low}\s*,${Close}\s*,.* -> Record
+
+EOF
+
