@@ -57,10 +57,16 @@ class BhavCopy(object):
             for j in xrange(len(parser.header)):
                 elem[parser.header[j]] = lists[i][j]
             parsed.append(elem)
-       index = 1
-       for record in parsed:
+        index = 1
+        commands = ""
+        for record in parsed:
             for key in record:
-                print(key +str(index) + " " +record[key])
+                command = "SET " + key +str(index) + " " +record[key] + "\n"
+                commands += command
+
+        with open(self.commands, "w") as f:
+            f.write(commands)
+
 
                     
 
