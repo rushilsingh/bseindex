@@ -45,11 +45,25 @@ class BhavCopy(object):
         return self.base_url.format(self.date_string)
 
     def parse(self):
-	template = "bhavcopy_template"
+        template = "bhavcopy_template"
+
         with open(template) as f:
             parser = textfsm.TextFSM(f)
 
-        lists = parser.ParseText(text)
+        lists = parser.ParseText(self.text)
+        parsed = []
+        for i in xrange(len(lists)):
+            elem = {}
+            for j in xrange(len(parser.header)):
+                elem[parser.header[j]] = lists[i][j]
+            parsed.append(elem)
+        
+                    
+                    
+
+
+
+                
 
        
 
