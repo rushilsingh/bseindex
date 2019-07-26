@@ -10,6 +10,7 @@ class BhavCopy(object):
         self.base_url = "https://www.bseindia.com/download/BhavCopy/Equity/EQ"
         self.url_postfix = "_CSV.ZIP"
         self.date_string = self.get_date_string()
+        print self.date_string
         
         url = self.get_url()
         response = requests.get(url, stream=True)
@@ -27,13 +28,11 @@ class BhavCopy(object):
 
     def get_date_string(self):
         
-        now = str(datetime.datetime.now())
-        now = now.split()[0]
-        now = now.split("-")
-        day = now[2]
-        month = now[1]
-        year = now[0][2:]
-        return (day + month + year)
+        now = datetime.datetime.today()
+        day = str(now.day) if len(str(now.day))==2 else (str(0) + str(now.day))
+        month = str(now.month) if len(str(now.month))==2 else (str(0) + str(now.month))
+        year = str(now.year)[-2:]
+        return (day+month+year)
     
     def get_url(self):
         return self.base_url + self.date_string + self.url_postfix
