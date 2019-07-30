@@ -75,9 +75,7 @@ class BhavCopy(object):
             if len(keys) == 0:
                 break
             open_index = red.keys('Open%s' % index)
-            print(open_index)
             open_index = red.mget(open_index[0])[0]
-            print(open_index)
             close_index = red.keys('Close%s' % index)
             close_index = red.mget(close_index[0])[0]
             open_index = float(open_index)
@@ -86,7 +84,6 @@ class BhavCopy(object):
             change = diff
             red.set("Change"+str(index), str(change))
             index += 1
-            print(change)
 
 
 
