@@ -67,17 +67,17 @@ class BhavCopy(object):
             index += 1
         with open(self.commands, "w") as f:
             f.write(commands)
-        os.system("cat %s | redis-cli " % self.commands) 
+        os.popen("cat %s | redis-cli " % self.commands)
 
 
 
-                    
 
 
 
-                
 
-       
+
+
+
 
 if __name__ == "__main__":
     bhavcopy = BhavCopy()
