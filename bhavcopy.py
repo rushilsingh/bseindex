@@ -84,7 +84,7 @@ class BhavCopy(object):
             change = diff
             red.sadd("Change"+str(index), str(change))
             index += 1
-
+            print(change)
 
 
 
