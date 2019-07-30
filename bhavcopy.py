@@ -46,7 +46,6 @@ class BhavCopy(object):
         return self.base_url.format(self.date_string)
 
     def parse(self):
-        print("debugingRUSHIL")
         template = "bhavcopy_template"
 
         with open(template) as f:
@@ -63,6 +62,7 @@ class BhavCopy(object):
         commands = ""
 
         red = redis.from_url(os.environ.get('REDIS_URL'))
+        print(parsed)
         for record in parsed:
             for key in record:
                 val = "\"" + record[key] + "\"" if " " in record[key] else record[key]
