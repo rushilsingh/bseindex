@@ -4,19 +4,9 @@ import redis
 import os
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('html'))
-redis_url = os.environ.get("REDIS_URL")
-
-
 
 config = {
 
-
-    'tools.sessions.on' : True,
-    'tools.sessions.storage_type' : 'redis',
-    'tools.sessions.host' : redis_url,
-    'tools.sessions.port' : 6379,
-    'tools.sessions.db' : 0,
-    'tools.sessions.password' : None
 
     '/assets': {
         'tools.staticdir.root': os.path.dirname(os.path.abspath(__file__)),
@@ -29,7 +19,8 @@ config = {
 class App(object):
     @cherrypy.expose
     def index(self):
-        red = redis.Redis(redis_url, 6379)
+        red = redis.from_url(os.environ.get("REDIS_URL"))
+
         output = []
         dictionary = {}
         index = 1
