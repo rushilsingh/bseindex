@@ -5,10 +5,13 @@ import os
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('html'))
 
-
-
-
 config = {
+
+    'global': {
+'server.socket_host': '0.0.0.0',
+        'server.socket_port': int(os.environ.get('PORT', 5000)),
+    },
+
     '/assets': {
         'tools.staticdir.root': os.path.dirname(os.path.abspath(__file__)),
         'tools.staticdir.on': True,
@@ -20,7 +23,8 @@ config = {
 class App(object):
     @cherrypy.expose
     def index(self):
-        red = redis.Redis("localhost", 6379)
+        red = redis.from_url(os.environ.get("REDIS_URL"))
+
         output = []
         dictionary = {}
         index = 1
@@ -50,7 +54,8 @@ class App(object):
             values = red.mget(keys)
             del_string = len(str(index))
             for i in range(len(keys)):
-                output += str(keys[i][:-del_string]) + " : " + str(values[i]) + " , "
+                output += "<b>" + str(keys[i][:-del_string]) + "</b>" + " : " + str(values[i]) + " , "
+            output[:-len(" , ")]
             output += "<br />"
         tmpl = env.get_template('index.html')
         return tmpl.render(data=output)

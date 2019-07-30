@@ -60,20 +60,18 @@ class BhavCopy(object):
             parsed.append(elem)
         index = 1
         commands = ""
+
+        red = redis.from_url(os.environ.get('REDIS_URL'))
         for record in parsed:
             for key in record:
                 val = "\"" + record[key] + "\"" if " " in record[key] else record[key]
-                command = "SET " + key +str(index) + " " + val + "\n"
-                commands += command
+                actual_key = key + str(index)
+                red.set(actual_key, val)
             index += 1
-        with open(self.commands, "w") as f:
-            f.write(commands)
-        os.popen("cat %s | redis-cli " % self.commands)
-        red = redis.Redis("localhost", 6379)
         commands = " "
         index = 1
         while True:
-            keys = red.keys('*[A-Za-z]+%s' % (index))
+            keys = red.keys('*[A-Za-z]%s' % (index))
             if len(keys) == 0:
                 break
             open_index = red.keys('Open%s' % index)
@@ -84,22 +82,8 @@ class BhavCopy(object):
             diff = float(open_index) - float(close_index)
             diff = (diff/open_index) * 100.00000
             change = diff
-            commands += "SET " + "Change"+str(index) + " " + str(change) + "\n"
+            red.set("Change"+str(index), str(change))
             index += 1
-        with open(self.commands, "w") as f:
-            f.write(commands)
-
-        os.popen("cat %s | redis-cli " % self.commands)
-        #os.unlink(self.commands)
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
