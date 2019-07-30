@@ -1,16 +1,20 @@
 import cherrypy
 from bhavcopy import BhavCopy
 import redis
+import os
+from jinja2 import Environment, FileSystemLoader
+env = Environment(loader=FileSystemLoader('html'))
+
+
 
 
 config = {
-    'tools.sessions.on' : True,
-    'tools.sessions.storage_type' : 'redis',
-    'tools.sessions.host' : '127.0.0.1',
-    'tools.sessions.port' : 6379,
-    'tools.sessions.db' : 0,
-    'tools.sessions.password' : None
+    '/assets': {
+        'tools.staticdir.root': os.path.dirname(os.path.abspath(__file__)),
+        'tools.staticdir.on': True,
+        'tools.staticdir.dir': 'assets',
     }
+}
 
 
 class App(object):
@@ -48,7 +52,9 @@ class App(object):
             for i in range(len(keys)):
                 output += str(keys[i][:-del_string]) + " : " + str(values[i]) + " , "
             output += "<br />"
-        return output
+        tmpl = env.get_template('index.html')
+        return tmpl.render(data=output)
+
 
 
 
@@ -60,5 +66,5 @@ if __name__ == '__main__':
     bhavcopy = BhavCopy()
     bhavcopy.download()
     bhavcopy.parse()
-    cherrypy.quickstart(App())
+    cherrypy.quickstart(App(), "/", config=config)
 
