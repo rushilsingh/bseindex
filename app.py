@@ -5,6 +5,7 @@ import os
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('html'))
 
+red = redis.from_url(os.environ.get("REDIS_URL"))
 
 
 
@@ -29,7 +30,6 @@ config = {
 class App(object):
     @cherrypy.expose
     def index(self):
-        red = redis.Redis("localhost", 6379)
         output = []
         dictionary = {}
         index = 1
