@@ -46,6 +46,7 @@ class BhavCopy(object):
         return self.base_url.format(self.date_string)
 
     def parse(self):
+        print("debugingRUSHIL")
         template = "bhavcopy_template"
 
         with open(template) as f:
