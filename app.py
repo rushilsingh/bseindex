@@ -54,7 +54,7 @@ class App(object):
             values = red.mget(keys)
             del_string = len(str(index))
             for i in range(len(keys)):
-                output += "<b>" str(keys[i][:-del_string]) "</b>" + " : " + str(values[i]) + " , "
+                output += "<b>" + str(keys[i][:-del_string]) + "</b>" + " : " + str(values[i]) + " , "
             output[:-len(" , ")]
             output += "<br />"
         tmpl = env.get_template('index.html')
