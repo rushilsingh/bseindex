@@ -4,6 +4,7 @@ import io
 import zipfile
 import datetime
 import textfsm
+import redis
 
 class BhavCopy(object):
 
@@ -29,7 +30,7 @@ class BhavCopy(object):
         z.extractall()
         with open(self.fname) as f:
             self.text = f.read()
-
+        os.unlink(self.fname)
 
 
     def get_date_string(self):
@@ -68,6 +69,28 @@ class BhavCopy(object):
         with open(self.commands, "w") as f:
             f.write(commands)
         os.popen("cat %s | redis-cli " % self.commands)
+        red = redis.Redis("localhost", 6379)
+        commands = " "
+        index = 1
+        while True:
+            keys = red.keys('*[A-Za-z]+%s' % (index))
+            if len(keys) == 0:
+                break
+            open_index = red.keys('Open%s' % index)
+            open_index = red.mget(open_index[0])[0]
+            close_index = red.keys('Close%s' % index)
+            close_index = red.mget(close_index[0])[0]
+            open_index = float(open_index)
+            diff = float(open_index) - float(close_index)
+            diff = (diff/open_index) * 100.00000
+            change = diff
+            commands += "SET " + "Change"+str(index) + " " + str(change) + "\n"
+            index += 1
+        with open(self.commands, "w") as f:
+            f.write(commands)
+
+        os.popen("cat %s | redis-cli " % self.commands)
+        os.unlink(self.commands)
 
 
 
