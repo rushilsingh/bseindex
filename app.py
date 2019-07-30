@@ -9,6 +9,15 @@ env = Environment(loader=FileSystemLoader('html'))
 
 
 config = {
+
+
+    'tools.sessions.on' : True,
+    'tools.sessions.storage_type' : 'redis',
+    'tools.sessions.host' : '127.0.0.1',
+    'tools.sessions.port' : 6379,
+    'tools.sessions.db' : 0,
+    'tools.sessions.password' : None
+
     '/assets': {
         'tools.staticdir.root': os.path.dirname(os.path.abspath(__file__)),
         'tools.staticdir.on': True,
