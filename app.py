@@ -27,6 +27,7 @@ class App(object):
         max = None
         while True:
             keys = red.keys('*Change%s' % (index))
+            print(keys)
             if len(keys) == 0:
                 break
             key = keys[0]

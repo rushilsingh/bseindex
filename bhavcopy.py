@@ -62,7 +62,6 @@ class BhavCopy(object):
         commands = ""
 
         red = redis.from_url(os.environ.get('REDIS_URL'))
-        print(parsed)
         for record in parsed:
             for key in record:
                 val = "\"" + record[key] + "\"" if " " in record[key] else record[key]
@@ -83,7 +82,7 @@ class BhavCopy(object):
             diff = float(open_index) - float(close_index)
             diff = (diff/open_index) * 100.00000
             change = diff
-            red.add("Change"+str(index), str(change))
+            red.sadd("Change"+str(index), str(change))
             index += 1
 
 
