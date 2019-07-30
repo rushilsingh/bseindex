@@ -72,10 +72,10 @@ class BhavCopy(object):
         index = 1
         while True:
             keys = red.keys('*[A-Za-z]%s' % (index))
-            print(keys)
             if len(keys) == 0:
                 break
             open_index = red.keys('Open%s' % index)
+            print(open_index)
             open_index = red.mget(open_index[0])[0]
             close_index = red.keys('Close%s' % index)
             close_index = red.mget(close_index[0])[0]
