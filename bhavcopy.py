@@ -67,6 +67,8 @@ class BhavCopy(object):
                 val = "\"" + record[key] + "\"" if " " in record[key] else record[key]
                 actual_key = key + str(index)
                 red.sadd(actual_key, val)
+                print(red.keys("*"))
+                print("RUSHIL")
             index += 1
         commands = " "
         index = 1
