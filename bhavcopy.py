@@ -66,7 +66,7 @@ class BhavCopy(object):
             for key in record:
                 val = "\"" + record[key] + "\"" if " " in record[key] else record[key]
                 actual_key = key + str(index)
-                red.sadd(actual_key, val)
+                red.set(actual_key, val)
             index += 1
         commands = " "
         index = 1
@@ -84,7 +84,7 @@ class BhavCopy(object):
             diff = float(open_index) - float(close_index)
             diff = (diff/open_index) * 100.00000
             change = diff
-            red.sadd("Change"+str(index), str(change))
+            red.set("Change"+str(index), str(change))
             index += 1
             print(change)
 
