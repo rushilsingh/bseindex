@@ -22,6 +22,7 @@ jaraco.functools==2.0
 more-itertools==5.0.0
 packaging==19.0
 pathlib2==2.3.4
+jinja2
 pluggy==0.12.0
 portend==2.5
 psycopg2==2.8.3
