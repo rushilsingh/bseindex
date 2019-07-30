@@ -53,9 +53,9 @@ class BhavCopy(object):
 
         lists = parser.ParseText(self.text)
         parsed = []
-        for i in xrange(len(lists)):
+        for i in range(len(lists)):
             elem = {}
-            for j in xrange(len(parser.header)):
+            for j in range(len(parser.header)):
                 elem[parser.header[j]] = lists[i][j]
             parsed.append(elem)
         index = 1
@@ -90,7 +90,7 @@ class BhavCopy(object):
             f.write(commands)
 
         os.popen("cat %s | redis-cli " % self.commands)
-        os.unlink(self.commands)
+        #os.unlink(self.commands)
 
 
 

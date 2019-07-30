@@ -1,8 +1,6 @@
 import cherrypy
 from bhavcopy import BhavCopy
-import cherrys
 import redis
-cherrypy.lib.sessions.RedisSession = cherrys.RedisSession
 
 
 config = {
@@ -48,7 +46,7 @@ class App(object):
             values = red.mget(keys)
             del_string = len(str(index))
             for i in range(len(keys)):
-                output += keys[i][:-del_string] + " : " + values[i] + " , "
+                output += str(keys[i][:-del_string]) + " : " + str(values[i]) + " , "
             output += "<br />"
         return output
 
