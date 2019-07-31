@@ -20,7 +20,15 @@ config = {
 }
 
 
-class App(object):
+class HomePage(object):
+    @cherrypy.expose
+    def index(self):
+        output = "<a href=\"/bhavcopy/\">Latest Bhavcopy Data</a>"
+        tmpl = env.get_template('index.html')
+        return tmpl.render(data=output)
+
+class BhavCopyPage(object):
+    
     @cherrypy.expose
     def index(self):
         bhavcopy.download()
@@ -50,17 +58,23 @@ class App(object):
                     results.append(key)
                     break
         output = ""
+        output += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+        serial = 1
         for index in results:
+            output += "<b>" + str(serial) + ")"
+            serial += 1
             keys = red.keys("*[A-Za-z]%s" % index)
             values = red.mget(keys)
             del_string = len(str(index))
             for i in range(len(keys)):
-                output += "<b>" + str(keys[i][:-del_string]) + "</b>" + " : " + str(values[i]) + " , "
-            output[:-len(" , ")]
-            output += "<br />"
+                output += str(keys[i][:-del_string]) + "</b>" + " : " + str(values[i]) + " , "
+            output = output[:-len(" , ")]
+            output += "<br /><br />"
         tmpl = env.get_template('index.html')
         return tmpl.render(data=output)
 
+root = HomePage()
+root.bhavcopy = BhavCopyPage()
 if __name__ == '__main__':
     bhavcopy = BhavCopy()
-    cherrypy.quickstart(App(), "/", config=config)
+    cherrypy.quickstart(root, "/", config=config)
