@@ -23,7 +23,8 @@ config = {
 class HomePage(object):
     @cherrypy.expose
     def index(self):
-        output = "<a href=\"/bhavcopy/\">Latest Bhavcopy Data (Top ten stocks)</a><br /> (Top ten stocks are calculated based on change percentage from open to close)"
+        output = "<a href=\"/bhavcopy/\">Latest Bhavcopy Data (Top ten stocks)</a><br /> (Top ten stocks are calculated based on change percentage from open to close)<br />"
+	output = "<a href=\"/search/\">Search</a><br />"
         tmpl = env.get_template('index.html')
         return tmpl.render(data=output)
 
@@ -74,8 +75,25 @@ class BhavCopyPage(object):
         tmpl = env.get_template('index.html')
         return tmpl.render(data=output)
 
+class SearchPage(object):
+
+    @cherrypy.expose() 
+    def index(self): 
+        return """ 
+            <form method="post" action="process"> 
+            Search: <input type="text" name="name"><br /> 
+            <input type="submit"> 
+            """ 
+
+    @cherrypy.expose() 
+    def process(self, data):
+        return "done." 
+        
+
 root = HomePage()
 root.bhavcopy = BhavCopyPage()
+root.search = SearchPage()
+
 if __name__ == '__main__':
     bhavcopy = BhavCopy()
     cherrypy.quickstart(root, "/", config=config)
