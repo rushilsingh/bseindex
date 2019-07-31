@@ -23,7 +23,7 @@ config = {
 class HomePage(object):
     @cherrypy.expose
     def index(self):
-        output = "<a href=\"/bhavcopy/\">Bhavcopy</a>"
+        output = "<a href=\"/bhavcopy/\">Latest Bhavcopy Data</a>"
         tmpl = env.get_template('index.html')
         return tmpl.render(data=output)
 
@@ -58,6 +58,7 @@ class BhavCopyPage(object):
                     results.append(key)
                     break
         output = ""
+        output += "Latest " + bhavcopy.fname + "<br /><br />"
         for index in results:
             keys = red.keys("*[A-Za-z]%s" % index)
             values = red.mget(keys)
