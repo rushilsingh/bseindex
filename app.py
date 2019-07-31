@@ -28,7 +28,7 @@ class HomePage(object):
         <br /> (Top ten stocks are calculated based on change percentage from open to close)<br /><br />
             <form method="post" action="search">
             Search: <input type="text" name="name"><br />
-            <input type="search">
+            <input type="submit">
             """
         tmpl = env.get_template('index.html')
         return tmpl.render(data=output)
