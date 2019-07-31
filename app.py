@@ -43,9 +43,8 @@ class HomePage(object):
         for key in keys:
             value = red.mget(key)[0]
             if str(name).lower() in str(value).lower():
-                output.append(str(key[-1]))
+                matches.append(str(key[-1]))
 
-        matches = output
         output = ""
         for match in matches:
             keys = red.keys("*[A-Za-z]%s" % match)
