@@ -61,7 +61,7 @@ class BhavCopyPage(object):
         output += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         serial = 1
         for index in results:
-            output += "<b>" + str(serial) + ")</b>"
+            output += "<b>" + str(serial) + ") </b>"
             serial += 1
             keys = red.keys("*[A-Za-z]%s" % index)
             keys.sort()
