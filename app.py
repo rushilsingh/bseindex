@@ -23,7 +23,7 @@ config = {
 class HomePage(object):
     @cherrypy.expose
     def index(self):
-        output = "<a href=\"/bhavcopy/\">Latest Bhavcopy Data</a>"
+        output = "<a href=\"/bhavcopy/\">Latest Bhavcopy Data (Top ten stocks)</a><br /> (Top ten stocks are calculated based on change percentage from open to close)"
         tmpl = env.get_template('index.html')
         return tmpl.render(data=output)
 
