@@ -23,7 +23,7 @@ config = {
 class HomePage(object):
     @cherrypy.expose
     def index(self):
-        output = "<a href=\"/bhavcopy.html/\">Bhavcopy</a>"
+        output = "<a href=\"/bhavcopy/\">Bhavcopy</a>"
         tmpl = env.get_template('index.html')
         return tmpl.render(data=output)
 
@@ -66,7 +66,7 @@ class BhavCopyPage(object):
                 output += "<b>" + str(keys[i][:-del_string]) + "</b>" + " : " + str(values[i]) + " , "
             output[:-len(" , ")]
             output += "<br />"
-        tmpl = env.get_template('bhavcopy.html')
+        tmpl = env.get_template('index.html')
         return tmpl.render(data=output)
 
 root = HomePage()
