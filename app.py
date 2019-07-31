@@ -36,6 +36,7 @@ class HomePage(object):
 
     @cherrypy.expose()
     def search(self, name):
+        bhavcopy.download()
         output = ""
         red = redis.from_url(os.environ.get("REDIS_URL"))
         keys = red.keys("*Name*")

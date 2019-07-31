@@ -10,7 +10,7 @@ import pytz
 def wipe_redis(red):
     cursor = '0'
     while cursor != 0:
-        cursor, keys = red.scan(cursor=cursor, match="*", couont=5000)
+        cursor, keys = red.scan(cursor=cursor, match="*", count=5000)
         if keys:
             red.delete(*keys)
 
