@@ -39,7 +39,7 @@ class HomePage(object):
     def search(self, name):
         bhavcopy.download()
         output = ""
-        red = redis.from_url(os.environ.get("REDIS_URL"))
+        red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
         keys = red.keys("*Name*")
         matches = []
         pattern = re.compile(".*[A-Za-z]([0-9]+)")
@@ -69,7 +69,7 @@ class BhavCopyPage(object):
     @cherrypy.expose
     def index(self):
         bhavcopy.download()
-        red = redis.from_url(os.environ.get("REDIS_URL"))
+        red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
 
         output = []
         dictionary = {}

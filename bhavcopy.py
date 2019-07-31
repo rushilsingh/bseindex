@@ -73,7 +73,7 @@ class BhavCopy(object):
         index = 1
         commands = ""
 
-        red = redis.from_url(os.environ.get('REDIS_URL'))
+        red = redis.from_url(os.environ.get('REDIS_URL'), decode_responses=True)
         wipe_redis(red)
         for record in parsed:
             for key in record:
