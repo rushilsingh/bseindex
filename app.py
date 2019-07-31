@@ -23,6 +23,7 @@ config = {
 class App(object):
     @cherrypy.expose
     def index(self):
+        bhavcopy.download()
         red = redis.from_url(os.environ.get("REDIS_URL"))
 
         output = []
@@ -60,16 +61,6 @@ class App(object):
         tmpl = env.get_template('index.html')
         return tmpl.render(data=output)
 
-
-
-
-
-
-
-
 if __name__ == '__main__':
     bhavcopy = BhavCopy()
-    bhavcopy.download()
-    bhavcopy.parse()
     cherrypy.quickstart(App(), "/", config=config)
-
