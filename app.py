@@ -58,7 +58,7 @@ class BhavCopyPage(object):
                     results.append(key)
                     break
         output = ""
-        output += "Latest " + bhavcopy.fname + "<br /><br />"
+        output += "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "<br /><br />"
         for index in results:
             keys = red.keys("*[A-Za-z]%s" % index)
             values = red.mget(keys)
