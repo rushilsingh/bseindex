@@ -23,12 +23,45 @@ config = {
 class HomePage(object):
     @cherrypy.expose
     def index(self):
-        output = "<a href=\"/bhavcopy/\">Latest Bhavcopy Data (Top ten stocks)</a><br /> (Top ten stocks are calculated based on change percentage from open to close)"
+        output = """
+        <a href="/bhavcopy/">Latest Bhavcopy Data (Top ten stocks)</a>
+        <br /> (Top ten stocks are calculated based on change percentage from open to close)<br /><br />
+            <form method="post" action="search">
+            Search: <input type="text" name="name"><br />
+            <input type="submit">
+            """
         tmpl = env.get_template('index.html')
         return tmpl.render(data=output)
 
+
+    @cherrypy.expose()
+    def search(self, name):
+        output = ""
+        red = redis.from_url(os.environ.get("REDIS_URL"))
+        keys = red.keys("*Name*")
+        matches = []
+        max = None
+        for key in keys:
+            value = red.mget(key)[0]
+            if str(name).lower() in str(value).lower():
+                matches.append(str(key[-1]))
+        if len(matches == 0):
+            output += "No search results"
+        for match in matches:
+            keys = red.keys("*[A-Za-z]%s" % match)
+            keys.sort()
+            values = red.mget(keys)
+            del_string = len(match)
+            for i in range(len(keys)):
+                output += "<b>" + str(keys[i][:-del_string]) + "</b>" + " : " + str(values[i]) + " , "
+            output = output[:-len(" , ")]
+            output += "<br /><br />"
+
+        tmpl = env.get_template("index.html")
+        return tmpl.render(data=output)
+
 class BhavCopyPage(object):
-    
+
     @cherrypy.expose
     def index(self):
         bhavcopy.download()
@@ -76,6 +109,7 @@ class BhavCopyPage(object):
 
 root = HomePage()
 root.bhavcopy = BhavCopyPage()
+
 if __name__ == '__main__':
     bhavcopy = BhavCopy()
     cherrypy.quickstart(root, "/", config=config)
