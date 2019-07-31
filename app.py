@@ -64,6 +64,7 @@ class BhavCopyPage(object):
             output += "<b>" + str(serial) + ")"
             serial += 1
             keys = red.keys("*[A-Za-z]%s" % index)
+            keys.sort()
             values = red.mget(keys)
             del_string = len(str(index))
             for i in range(len(keys)):
