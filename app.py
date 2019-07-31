@@ -36,6 +36,7 @@ class HomePage(object):
 
     @cherrypy.expose()
     def search(self, name):
+        output = name
         tmpl = env.get_template("index.html")
         return tmpl.render(data=output)
 
