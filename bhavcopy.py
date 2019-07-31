@@ -10,7 +10,7 @@ import pytz
 def wipe_redis(red):
     cursor = '0'
     while cursor != 0:
-        cursor, keys = red.scan(cursor=cursor, match="*", couont=5000)
+        cursor, keys = red.scan(cursor=cursor, match="*", count=5000)
         if keys:
             red.delete(*keys)
 
@@ -92,7 +92,7 @@ class BhavCopy(object):
             close_index = red.keys('Close%s' % index)
             close_index = red.mget(close_index[0])[0]
             open_index = float(open_index)
-            diff = float(open_index) - float(close_index)
+            diff = float(close_index) - float(open_index)
             diff = (diff/open_index) * 100.00000
             change = diff
             red.set("Change"+str(index), str(change))
