@@ -20,15 +20,17 @@ config = {
 }
 
 
-class App(object):
+class HomePage(object):
     @cherrypy.expose
     def index(self):
         output = "<a href=\"bhavcopy.html\">Bhavcopy</a>"
         tmpl = env.get_template('index.html')
         return tmpl.render(data=output)
 
+class BhavCopyPage(object):
+    
     @cherrypy.expose
-    def bhavcopy(self):
+    def index(self):
         bhavcopy.download()
         red = redis.from_url(os.environ.get("REDIS_URL"))
 
@@ -67,7 +69,8 @@ class App(object):
         tmpl = env.get_template('bhavcopy.html')
         return tmpl.render(data=output)
 
-
+root = HomePage()
+root.bhavcopy = BhavCopyPage()
 if __name__ == '__main__':
     bhavcopy = BhavCopy()
-    cherrypy.quickstart(App(), "/", config=config)
+    cherrypy.quickstart(root, "/", config=config)
