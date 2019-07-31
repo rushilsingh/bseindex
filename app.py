@@ -23,7 +23,7 @@ config = {
 class HomePage(object):
     @cherrypy.expose
     def index(self):
-        output = "<a href=\"bhavcopy.html\">Bhavcopy</a>"
+        output = "<a href=\"/bhavcopy.html/\">Bhavcopy</a>"
         tmpl = env.get_template('index.html')
         return tmpl.render(data=output)
 
