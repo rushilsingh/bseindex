@@ -7,6 +7,13 @@ import textfsm
 import redis
 import pytz
 
+def wipe_redis(red):
+    cursor = '0'
+    while cursor != 0:
+        cursor, keys = red.scan(cursor=cursor, match="*", couont=5000)
+        if keys:
+            red.delete(*keys)
+
 class BhavCopy(object):
 
     def __init__(self):
@@ -67,6 +74,7 @@ class BhavCopy(object):
         commands = ""
 
         red = redis.from_url(os.environ.get('REDIS_URL'))
+        wipe_redis(red)
         for record in parsed:
             for key in record:
                 val = "\"" + record[key] + "\"" if " " in record[key] else record[key]
