@@ -28,7 +28,7 @@ class HomePage(object):
         <a href="/bhavcopy/">Latest Bhavcopy Data (Top ten stocks)</a>
         <br /> (Top ten stocks are calculated based on change percentage from open to close)<br /><br />
             <form method="post" action="search">
-            Search: <input type="text" name="name"><br />
+            Search by 'name' field: <input type="text" name="name"><br />
             <input type="submit">
             """
         tmpl = env.get_template('index.html')
