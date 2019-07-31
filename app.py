@@ -37,6 +37,27 @@ class HomePage(object):
     @cherrypy.expose()
     def search(self, name):
         output = name
+        red = redis.from_url(os.environ.get("REDIS_URL"))
+        keys = red.keys("Name[0-9]")
+        output = []
+        max = None
+        for key in keys:
+            value = red.mget(key)[0]
+            if name in value.lower():
+                output += key[-1]
+
+        matches = output
+        output = ""
+        for match in matches:
+            keys = red.keys("*[A-Za-z]%s" % match)
+            keys.sort()
+            values = red.mget(keys)
+            del_string = len(str(match))
+            for i in range(len(keys)):
+                output += "<b>" + str(keys[i][:-del_string]) + "</b>" + " : " + str(values[i]) + " , "
+            output = output[:-len(" , ")]
+            output += "<br /><br />"
+
         tmpl = env.get_template("index.html")
         return tmpl.render(data=output)
 
