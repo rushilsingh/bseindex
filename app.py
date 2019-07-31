@@ -86,7 +86,7 @@ class SearchPage(object):
             """ 
 
     @cherrypy.expose() 
-    def process(self, data):
+    def process(self, name):
         return "done." 
         
 
