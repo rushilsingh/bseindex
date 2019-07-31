@@ -14,6 +14,7 @@ class BhavCopy(object):
         self.commands = "commands.txt"
         self.response = None
         self.timedelta = 0
+        self.fname = None
 
     def download(self):
 
@@ -25,12 +26,15 @@ class BhavCopy(object):
             self.timedelta += 1
         self.timedelta = 0
 
-        self.fname = self.base_fname.format(self.date_string)
-        z = zipfile.ZipFile(io.BytesIO(self.response.content))
-        z.extractall()
-        with open(self.fname) as f:
-            self.text = f.read()
-        os.unlink(self.fname)
+        fname = self.base_fname.format(self.date_string)
+        if self.fname != fname:
+            self.fname = fname
+            z = zipfile.ZipFile(io.BytesIO(self.response.content))
+            z.extractall()
+            with open(self.fname) as f:
+                self.text = f.read()
+            os.unlink(self.fname)
+            self.parse()
 
 
     def get_date_string(self):
@@ -89,4 +93,3 @@ class BhavCopy(object):
 if __name__ == "__main__":
     bhavcopy = BhavCopy()
     bhavcopy.download()
-    bhavcopy.parse()
