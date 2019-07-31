@@ -28,7 +28,7 @@ class HomePage(object):
         <a href="/bhavcopy/">Latest Bhavcopy Data (Top ten stocks)</a>
         <br /> (Top ten stocks are calculated based on change percentage from open to close)<br /><br />
             <form method="post" action="search">
-            Search by 'name' field: <input type="text" name="name"><br />
+            Search by <b>'name'</b> field: <input type="text" name="name"><br />
             <input type="submit">
             """
         tmpl = env.get_template('index.html')
@@ -39,7 +39,7 @@ class HomePage(object):
     def search(self, name):
         bhavcopy.download()
         output = ""
-        red = redis.from_url(os.environ.get("REDIS_URL"))
+        red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
         keys = red.keys("*Name*")
         matches = []
         pattern = re.compile(".*[A-Za-z]([0-9]+)")
@@ -69,7 +69,7 @@ class BhavCopyPage(object):
     @cherrypy.expose
     def index(self):
         bhavcopy.download()
-        red = redis.from_url(os.environ.get("REDIS_URL"))
+        red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
 
         output = []
         dictionary = {}
