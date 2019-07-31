@@ -5,6 +5,7 @@ import zipfile
 import datetime
 import textfsm
 import redis
+import pytz
 
 class BhavCopy(object):
 
@@ -39,7 +40,7 @@ class BhavCopy(object):
 
     def get_date_string(self):
 
-        stamp = datetime.datetime.today() - datetime.timedelta(days=self.timedelta)
+        stamp = datetime.datetime.now(pytz.timezone("Asia/Kolkata")) - datetime.timedelta(days=self.timedelta)
         day = str(stamp.day) if len(str(stamp.day))==2 else (str(0) + str(stamp.day))
         month = str(stamp.month) if len(str(stamp.month))==2 else (str(0) + str(stamp.month))
         year = str(stamp.year)[-2:]
