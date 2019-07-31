@@ -68,7 +68,7 @@ class BhavCopyPage(object):
             del_string = len(str(index))
             for i in range(len(keys)):
                 output += str(keys[i][:-del_string]) + "</b>" + " : " + str(values[i]) + " , "
-            output[:-len(" , ")]
+            output = output[:-len(" , ")]
             output += "<br /><br />"
         tmpl = env.get_template('index.html')
         return tmpl.render(data=output)
