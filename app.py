@@ -45,7 +45,7 @@ class HomePage(object):
             value = red.mget(key)[0]
             if str(name).lower() in str(value).lower():
                 matches.append(str(key[-1]))
-        if len(matches == 0):
+        if len(matches) == 0:
             output += "No search results"
         for match in matches:
             keys = red.keys("*[A-Za-z]%s" % match)
