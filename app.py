@@ -37,13 +37,13 @@ class HomePage(object):
     @cherrypy.expose()
     def search(self, name):
         red = redis.from_url(os.environ.get("REDIS_URL"))
-        keys = red.keys("Name[0-9]")
-        output = []
+        keys = red.keys("*Name*")
+        matches = []
         max = None
         for key in keys:
             value = red.mget(key)[0]
             if str(name).lower() in str(value).lower():
-                output.append(key[-1])
+                output.append(str(key[-1]))
 
         matches = output
         output = ""
