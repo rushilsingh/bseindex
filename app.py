@@ -42,8 +42,8 @@ class HomePage(object):
         max = None
         for key in keys:
             value = red.mget(key)[0]
-            if str(name) in str(value.lower()):
-                output += key[-1]
+            if str(name).lower() in str(value).lower():
+                output.append(key[-1])
 
         matches = output
         output = ""
