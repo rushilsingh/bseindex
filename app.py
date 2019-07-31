@@ -1,3 +1,4 @@
+import re
 import cherrypy
 from bhavcopy import BhavCopy
 import redis
@@ -41,11 +42,13 @@ class HomePage(object):
         red = redis.from_url(os.environ.get("REDIS_URL"))
         keys = red.keys("*Name*")
         matches = []
+        pattern = re.compile(".*[A-Za-z]([0-9]+)")
         max = None
         for key in keys:
             value = red.mget(key)[0]
             if str(name).lower() in str(value).lower():
-                matches.append(str(key[-1]))
+                match = pattern.match(str(key)).groups()[0]
+                matches.append(match)
         if len(matches) == 0:
             output += "No search results"
         for match in matches:
