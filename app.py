@@ -17,6 +17,10 @@ config = {
         'tools.staticdir.root': os.path.dirname(os.path.abspath(__file__)),
         'tools.staticdir.on': True,
         'tools.staticdir.dir': 'assets',
+    },
+    '/favicon.ico': {
+    'tools.staticfile.on': True,
+    'tools.staticfile.filenam': '/favicon.ico'
     }
 }
 
