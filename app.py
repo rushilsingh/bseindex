@@ -20,7 +20,7 @@ config = {
     },
     '/favicon.ico': {
     'tools.staticfile.on': True,
-    'tools.staticfile.filename': 'favicon.ico'
+    'tools.staticfile.filename': '/favicon.ico'
     }
 }
 
