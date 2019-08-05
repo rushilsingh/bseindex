@@ -43,6 +43,7 @@ class HomePage(object):
     def search(self, name):
         bhavcopy.download()
         output = ""
+        output += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
         keys = red.keys("*Name*")
         matches = []
