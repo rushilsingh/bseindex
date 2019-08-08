@@ -36,29 +36,30 @@ class HomePage(object):
     @cherrypy.expose()
     def search(self, name):
         bhavcopy.download()
-        output = ""
-        output += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+        fname = bhavcopy.fname
+
+        #output = ""
+        #output += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
         keys = red.keys("*Name*")
         matches = []
         pattern = re.compile(".*[A-Za-z]([0-9]+)")
+        output = []
         max = None
         for key in keys:
             value = red.mget(key)[0]
             if str(name).lower() in str(value).lower():
                 match = pattern.match(str(key)).groups()[0]
                 matches.append(match)
-        if len(matches) == 0:
-            output += "No search results"
         for match in matches:
+            row = {}
             keys = red.keys("*[A-Za-z]%s" % match)
             keys.sort()
             values = red.mget(keys)
             del_string = len(match)
             for i in range(len(keys)):
-                output += "<b>" + str(keys[i][:-del_string]) + "</b>" + " : " + str(values[i]) + " , "
-            output = output[:-len(" , ")]
-            output += "<br /><br />"
+                row[str(keys[i][:-del_string])] = values[i]
+                output.append(row)
 
         tmpl = env.get_template("results.html")
         return tmpl.render(data=output)
