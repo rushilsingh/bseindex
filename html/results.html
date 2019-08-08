@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
 {% for row in data %}
-    {{row}} <br />
+    {% for key, value in row.items %}
+    {{key}}:{{value}} &nbsp;&nbsp;
+    {% endfor %}
+ <br />
 {% endfor %}
 {% endblock %}
