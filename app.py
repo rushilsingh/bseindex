@@ -38,8 +38,8 @@ class HomePage(object):
         bhavcopy.download()
         fname = bhavcopy.fname
 
-        #output = ""
-        #output += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+        header = ""
+        header += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
         keys = red.keys("*Name*")
         matches = []
@@ -59,10 +59,11 @@ class HomePage(object):
             del_string = len(match)
             for i in range(len(keys)):
                 row[str(keys[i][:-del_string])] = values[i]
-                output.append(row)
+            output.append(row)
 
         tmpl = env.get_template("results.html")
-        return tmpl.render(data=output)
+        data = {"header": header, "output": output}
+        return tmpl.render(data=data)
 
 class BhavCopyPage(object):
 
@@ -70,7 +71,6 @@ class BhavCopyPage(object):
     def index(self):
         bhavcopy.download()
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
-
         output = []
         dictionary = {}
         index = 1
@@ -94,22 +94,22 @@ class BhavCopyPage(object):
                 if dictionary[key] == value:
                     results.append(key)
                     break
-        output = ""
-        output += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
-        serial = 1
+        output = []
+        header = ""
+        header += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+        #serial = 1
         for index in results:
-            output += "<b>" + str(serial) + ") </b>"
-            serial += 1
+            row = {}
             keys = red.keys("*[A-Za-z]%s" % index)
             keys.sort()
             values = red.mget(keys)
             del_string = len(str(index))
             for i in range(len(keys)):
-                output += "<b>" + str(keys[i][:-del_string]) + "</b>" + " : " + str(values[i]) + " , "
-            output = output[:-len(" , ")]
-            output += "<br /><br />"
-        tmpl = env.get_template('index.html')
-        return tmpl.render(data=output)
+                row[str(keys[i][:-del_string])] = str(values[i])
+            output.append(row)
+        tmpl = env.get_template('results.html')
+        data = {"header": header, "output": output}
+        return tmpl.render(data=data)
 
 root = HomePage()
 root.bhavcopy = BhavCopyPage()
