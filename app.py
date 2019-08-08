@@ -59,7 +59,7 @@ class HomePage(object):
             del_string = len(match)
             for i in range(len(keys)):
                 row[str(keys[i][:-del_string])] = values[i]
-                output.append(row)
+            output.append(row)
 
         tmpl = env.get_template("results.html")
         return tmpl.render(data=output)
