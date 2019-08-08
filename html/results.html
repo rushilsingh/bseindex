@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
 {% for row in data %}
-    {% for key, value in row.items %}
+    {% for key, value in row.items() %}
     {{key}}:{{value}} &nbsp;&nbsp;
     {% endfor %}
  <br />
