@@ -98,6 +98,7 @@ class BhavCopyPage(object):
         #output += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         #serial = 1
         for index in results:
+            row = {}
             #output += "<b>" + str(serial) + ") </b>"
             #serial += 1
             keys = red.keys("*[A-Za-z]%s" % index)
@@ -105,7 +106,8 @@ class BhavCopyPage(object):
             values = red.mget(keys)
             del_string = len(str(index))
             for i in range(len(keys)):
-                output.append({str(keys[i][:-del_string]):str(values[i])})
+                row[str(keys[i][:-del_string])] = str(values[i])
+            output.append(row)
         tmpl = env.get_template('results.html')
         return tmpl.render(data=output)
 
