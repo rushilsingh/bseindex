@@ -28,7 +28,7 @@ config = {
 class HomePage(object):
     @cherrypy.expose
     def index(self):
-        action = search
+        action = "search"
         tmpl = env.get_template('index.html')
         return tmpl.render(data=action)
 
