@@ -28,15 +28,9 @@ config = {
 class HomePage(object):
     @cherrypy.expose
     def index(self):
-        output = """
-    <a href="/bhavcopy/">Latest Bhavcopy Data (Top ten stocks)</a>
-        <br /> (Top ten stocks are calculated based on change percentage from open to close)<br /><br />
-
-	<form type="post" action="search" style="margin: 0"> <input id="name" type="text" 		name="name" placeholder="Search..." > <button id="search_submit" type="submit" >
-	Submit</button> </form>
-            """
+        action = search
         tmpl = env.get_template('index.html')
-        return tmpl.render(data=output)
+        return tmpl.render(data=action)
 
 
     @cherrypy.expose()
