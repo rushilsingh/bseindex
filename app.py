@@ -105,7 +105,7 @@ class BhavCopyPage(object):
             values = red.mget(keys)
             del_string = len(str(index))
             for i in range(len(keys)):
-                output.append({str(keys[i][:-del_string])
+                output.append({str(keys[i][:-del_string]):str(values[i])})
         tmpl = env.get_template('results.html')
         return tmpl.render(data=output)
 
