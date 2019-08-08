@@ -60,7 +60,7 @@ class HomePage(object):
             output = output[:-len(" , ")]
             output += "<br /><br />"
 
-        tmpl = env.get_template("index.html")
+        tmpl = env.get_template("results.html")
         return tmpl.render(data=output)
 
 class BhavCopyPage(object):
