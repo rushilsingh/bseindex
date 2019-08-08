@@ -1,10 +1,17 @@
 {% extends "layout.html" %}
 {% block body %}
-{{data.header}}
-{% for row in data.output %}
-    {% for key, value in row.items() %}
-    <b>{{key}}</b>:{{value}} &nbsp;&nbsp;
-    {% endfor %}
- <br />
+<table>
+<tr>{{data.header}}</tr>
+{% for element in data.output[0] %}
+    <th><b>{{element}}</th>
 {% endfor %}
+{% for row in data.output %}
+     <tr>
+    {% for key, value in row.items() %}
+        <td>{{value}}</td>
+    {% endfor %}
+    </tr>
+{% endfor %}
+</table>
+<br />
 {% endblock %}
