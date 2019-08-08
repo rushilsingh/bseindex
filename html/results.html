@@ -2,7 +2,7 @@
 {% block body %}
 {% for row in data %}
     {% for key, value in row.items() %}
-    {{key}}:{{value}} &nbsp;&nbsp;
+    <b>{{key}}</b>:{{value}} &nbsp;&nbsp;
     {% endfor %}
  <br />
 {% endfor %}
