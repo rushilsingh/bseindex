@@ -94,21 +94,19 @@ class BhavCopyPage(object):
                 if dictionary[key] == value:
                     results.append(key)
                     break
-        output = ""
-        output += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
-        serial = 1
+        output = []
+        #output += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+        #serial = 1
         for index in results:
-            output += "<b>" + str(serial) + ") </b>"
-            serial += 1
+            #output += "<b>" + str(serial) + ") </b>"
+            #serial += 1
             keys = red.keys("*[A-Za-z]%s" % index)
             keys.sort()
             values = red.mget(keys)
             del_string = len(str(index))
             for i in range(len(keys)):
-                output += "<b>" + str(keys[i][:-del_string]) + "</b>" + " : " + str(values[i]) + " , "
-            output = output[:-len(" , ")]
-            output += "<br /><br />"
-        tmpl = env.get_template('index.html')
+                output.append({str(keys[i][:-del_string])
+        tmpl = env.get_template('results.html')
         return tmpl.render(data=output)
 
 root = HomePage()
