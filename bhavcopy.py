@@ -13,7 +13,6 @@ class BhavCopy(object):
     def __init__(self):
         self.base_url = "https://www.bseindia.com/download/BhavCopy/Equity/EQ{}_CSV.ZIP"
         self.base_fname = "EQ{}.CSV"
-        self.commands = "commands.txt"
         self.response = None
         self.timedelta = 0
         self.fname = None
@@ -65,19 +64,24 @@ class BhavCopy(object):
                 elem[parser.header[j]] = lists[i][j]
             parsed.append(elem)
         index = 1
-        commands = ""
 
         red = redis.from_url(os.environ.get('REDIS_URL'), decode_responses=True)
         red.flushdb()
+        pipe = red.pipeline()
+        n = 1
         for record in parsed:
             for key in record:
                 val = "\"" + record[key] + "\"" if " " in record[key] else record[key]
                 actual_key = key + str(index)
-                red.set(actual_key, val)
+                pipe.set(actual_key, val)
+                n = n + 1
+                if (n % 64) == 0:
+                    pipe.execute()
+                    pipe = red.pipeline()
             index += 1
-        commands = " "
+        final = index
         index = 1
-        while True:
+        while True and index<=final:
             keys = red.keys('*[A-Za-z]%s' % (index))
             if len(keys) == 0:
                 break
