@@ -2,19 +2,19 @@
 {% block body %}
 <table>
 <tr>{{data.header}}</tr>
-{% if data.output is mapping %}
+{% if data.output is not string %}
 {% if data.output | length == 0 %}
 <tr> No results </tr>
 {% else %}
-<th>
+<tr>
 {% for column in data.table_header %}
-   <td>{{column}}</td>
+<th>{{column}}</th>
 {% endfor %}
-</th>
+</tr>
 {% for row in data.output %}
      <tr>
      {% for key in data.table_header %}
-        <td> row.{{key}} </td>
+        <td> {{row[key]}} </td>
     {% endfor %}
     </tr>
 {% endfor %}

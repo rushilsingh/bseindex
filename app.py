@@ -74,7 +74,7 @@ class HomePage(object):
         try:
             number = int(number)
         except:
-            return tmple.render({"header": header, "output":"Invalid input"})
+            return tmpl.render(data={"header": header, "table_header": table_header, "output":"Invalid input"})
         
         bhavcopy.download()
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
@@ -120,7 +120,7 @@ class BhavCopyPage(object):
             if cursor == 0:
                 break
         
-        data = {"header": header, "output": output}
+        data = {"header": header, "table_header": table_header, "output": output}
         
         tmpl = env.get_template("results.html")
         return tmpl.render(data=data)
