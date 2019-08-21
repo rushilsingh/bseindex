@@ -68,6 +68,7 @@ class HomePage(object):
 
     @cherrypy.expose
     def rank(self, number):
+        number = int(number)
         bhavcopy.download()
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
         #red = redis.Redis() 
