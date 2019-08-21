@@ -6,4 +6,4 @@ CACHES = {
          "LOCATION": os.environ.get('REDIS_URL'),
     }
 }
-  
+

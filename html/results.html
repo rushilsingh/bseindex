@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
 <table>
-<tr>{{data.header}}</tr>
+<tr><b>{{data.header}}</b></tr>
 {% if data.output is not string %}
 {% if data.output | length == 0 %}
 <tr> No results </tr>

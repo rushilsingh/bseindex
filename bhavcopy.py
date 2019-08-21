@@ -59,9 +59,9 @@ class BhavCopy(object):
         lists = parser.ParseText(self.text)
         parsed = []
 
-        for i in enumerate(lists):
+        for i,_ in enumerate(lists):
             elem = {}
-            for j in range(len(parser.header)):
+            for j,_ in enumerate(parser.header):
                 elem[parser.header[j]] = lists[i][j]
             parsed.append(elem)
 

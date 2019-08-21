@@ -4,7 +4,7 @@ from bhavcopy import BhavCopy
 import redis
 import os
 from jinja2 import Environment, FileSystemLoader
-env = Environment(loader=FileSystemLoader('html'))
+env = Environment(loader=FileSystemLoader('html'), autoescape=True)
 table_header = ["Code", "Name", "Open", "Close", "High", "Low", "Change"]
 
 config = {
@@ -40,7 +40,7 @@ class HomePage(object):
         bhavcopy.download()
 
         tmpl = env.get_template("results.html")
-        header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+        header = "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8]
 
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
 
@@ -68,8 +68,8 @@ class HomePage(object):
     def rank(self, number):
 
         bhavcopy.download()
+        header = "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8]
         tmpl = env.get_template("results.html")
-        header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         try:
             number = int(number)
             if number<0:
@@ -104,7 +104,7 @@ class BhavCopyPage(object):
     @cherrypy.expose
     def index(self):
         bhavcopy.download()
-        header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+        header = "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8]
 
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
         #red = redis.Redis()
