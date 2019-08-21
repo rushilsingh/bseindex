@@ -2,6 +2,10 @@
 {% block body %}
 <table>
 <tr>{{data.header}}</tr>
+{% if data.output is mapping %}
+{% if data.output | length == 0 %}
+<tr> No results </tr>
+{% else %}
 {% for element in data.output[0] %}
     <th><b>{{element}}</th>
 {% endfor %}
@@ -12,6 +16,10 @@
     {% endfor %}
     </tr>
 {% endfor %}
+{% endif %}
+{% else %}
+<tr> {{data.output}} </tr>
+{% endif %}
 </table>
 <br />
 {% endblock %}

@@ -68,7 +68,13 @@ class HomePage(object):
 
     @cherrypy.expose
     def rank(self, number):
-        number = int(number)
+        
+        header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+        try:
+            number = int(number)
+        except:
+            return {"header": header, output:"Invalid input"}
+        
         bhavcopy.download()
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
         #red = redis.Redis() 
@@ -88,7 +94,6 @@ class HomePage(object):
                             break
                 if cursor == 0:
                     break
-        header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         data = {"header": header, "output": output}
         
         tmpl = env.get_template("results.html")
@@ -99,25 +104,27 @@ class BhavCopyPage(object):
     @cherrypy.expose
     def index(self):
         bhavcopy.download()
+        header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
         #red = redis.Redis() 
         top = bhavcopy.top[:10] 
         output = []
         cursor = 0
         entries = 0
-        for search in top:
-            while True:
-                cursor, value = red.hscan("Diffs", cursor, search, 1000)
-                if value != {}:
-                    for key in value:
-                        entry = json.loads(value[key])
-                        output.append(entry)
-                        entries += 1
-                        if entries >= 10:
-                            break
-                if cursor == 0:
-                    break
-        header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+        search = "*"
+        while True:
+            cursor, value = red.hscan("Names", cursor, search, 1000)
+            if value != {}:
+                for key in value:
+                    entry = json.loads(value[key])
+                    output.append(entry)
+                    entries += 1
+                    if entries >= 10:
+                        break
+            if cursor == 0:
+                break
+        
         data = {"header": header, "output": output}
         
         tmpl = env.get_template("results.html")

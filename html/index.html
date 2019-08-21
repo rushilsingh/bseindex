@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% block body %}
-    <a href="/bhavcopy/">Latest Bhavcopy Data (Top ten stocks)</a>
-        <br /> (Top n stocks are calculated based on change percentage from open to close)<br /><br />
-
+    <a href="/bhavcopy/">Full Bhavcopy List (Latest)</a>
+    <br /><br /><br /> (Top n stocks are calculated based on change percentage from open to close)<br />
+    Search for top n stocks based on change percentage on latest trading day (Enter a number n): <br />
 	<form type="post" action="rank" style="margin: 0"> <input id="number" type="number" name="number" placeholder="Rank..." > <button id="search_submit" type="submit" >
 	Submit</button> </form>
-
+    Search for stocks by name (Enter a few characters that appear in the stock you want): <br />
 	<form type="post" action="search" style="margin: 0"> <input id="name" type="text" 		name="name" placeholder="Search..." > <button id="search_submit" type="submit" >
 	Submit</button> </form>
 {% endblock %}
