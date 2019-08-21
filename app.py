@@ -1,3 +1,4 @@
+import json
 import re
 import cherrypy
 from bhavcopy import BhavCopy
@@ -41,20 +42,27 @@ class HomePage(object):
 
         header = ""
         header += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+        
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
+        
+        #red = redis.Redis()
+        if name == "":
+            data = {"header": header, "output": {}}
+            return tmpl.render(data=data)
+        
         output = []
         values = []
-        search = "*" + name  + "*"
+        search = "*" + name.upper()  + "*"
         cursor = 0
         while True:
             cursor, value = red.hscan("Names", cursor, search, 1000)
+            if value != {}:
+                for key in value:
+                    entry = json.loads(value[key])
+                    output.append(entry)
             if cursor == 0:
                 break
-            if value:
-                import pickle
-                values.append(pickle.loads(value).decode(errors='replace'))
-        output = values
-
+        
         tmpl = env.get_template("results.html")
         data = {"header": header, "output": output}
         return tmpl.render(data=data)
@@ -65,19 +73,22 @@ class BhavCopyPage(object):
     def index(self):
         bhavcopy.download()
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
+        #red = redis.Redis() 
         top = bhavcopy.top 
-        print(top)
         output = []
         cursor = 0
+        entries = 0
         for search in top:
-            print(search)
             while True:
                 cursor, value = red.hscan("Diffs", cursor, search, 1000)
+                if value != {}:
+                    for key in value:
+                        entry = json.loads(value[key])
+                        output.append(entry)
+                        entries += 1
+                        if entries >= 10:
+                            break
                 if cursor == 0:
-                    break
-                if value:
-                    import pickle
-                    output.append(pickle.loads(value).decode(errors='replace'))
                     break
         header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         data = {"header": header, "output": output}

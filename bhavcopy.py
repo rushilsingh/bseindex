@@ -66,6 +66,7 @@ class BhavCopy(object):
         index = 1
 
         red = redis.from_url(os.environ.get('REDIS_URL'), decode_responses=True)
+        #red = redis.Redis()
         red.flushdb()
         pipe = red.pipeline()
         n = 0
@@ -81,13 +82,15 @@ class BhavCopy(object):
             input_values = deepcopy(record)
             input_values.update({"Change": diff})
             diffs.append(diff)
-            import pickle
-            pipe.hset("Names", name, pickle.dumps(record))
-            pipe.hset("Diffs", str(diff), pickle.dumps(record))
+            import json
+            red.hset("Names", name, json.dumps(input_values))
+            red.hset("Diffs", str(diff), json.dumps(input_values))
             n += 2
             if (n % 64) == 0:
                 pipe.execute()
                 pipe = red.pipeline()
+        pipe.execute()
+
         diffs.sort()
         diffs.reverse()
         if len(diffs)>10:
