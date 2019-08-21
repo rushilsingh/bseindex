@@ -93,8 +93,6 @@ class BhavCopy(object):
 
         diffs.sort()
         diffs.reverse()
-        if len(diffs)>10:
-            diffs = diffs[:10]
         diffs = [str(diff) for diff in diffs]
         self.top = diffs
 

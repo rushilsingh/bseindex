@@ -29,9 +29,8 @@ config = {
 class HomePage(object):
     @cherrypy.expose
     def index(self):
-        action = "search"
         tmpl = env.get_template('index.html')
-        return tmpl.render(data=action)
+        return tmpl.render(data=None)
 
 
     @cherrypy.expose()
@@ -67,6 +66,33 @@ class HomePage(object):
         data = {"header": header, "output": output}
         return tmpl.render(data=data)
 
+    @cherrypy.expose
+    def rank(self, number):
+        bhavcopy.download()
+        red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
+        #red = redis.Redis() 
+        top = bhavcopy.top[:number] 
+        output = []
+        cursor = 0
+        entries = 0
+        for search in top:
+            while True:
+                cursor, value = red.hscan("Diffs", cursor, search, 1000)
+                if value != {}:
+                    for key in value:
+                        entry = json.loads(value[key])
+                        output.append(entry)
+                        entries += 1
+                        if entries >= 10:
+                            break
+                if cursor == 0:
+                    break
+        header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+        data = {"header": header, "output": output}
+        
+        tmpl = env.get_template("results.html")
+        return tmpl.render(data=data)
+
 class BhavCopyPage(object):
 
     @cherrypy.expose
@@ -74,7 +100,7 @@ class BhavCopyPage(object):
         bhavcopy.download()
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
         #red = redis.Redis() 
-        top = bhavcopy.top 
+        top = bhavcopy.top[:10] 
         output = []
         cursor = 0
         entries = 0
