@@ -16,7 +16,7 @@ class BhavCopy(object):
         self.response = None
         self.timedelta = 0
         self.fname = None
-
+        self.top = []
     def download(self):
 
         while(self.response is None or self.response.status_code != 200):
@@ -68,24 +68,31 @@ class BhavCopy(object):
         red = redis.from_url(os.environ.get('REDIS_URL'), decode_responses=True)
         red.flushdb()
         pipe = red.pipeline()
-        n = 1
+        n = 0
         diffs = []
         for record in parsed:
             name = record["Name"]
-            open_value = float(record["Open"]
+            open_value = float(record["Open"])
             close_value = float(record["Close"])
             diff = open_value - close_value
-            diff = (diff/open_index) * 100.00000
+            diff = (diff/open_value) * 100.00000
             name = "\"" + name + "\"" if " " in name else name
             from copy import deepcopy
             input_values = deepcopy(record)
-            input_values.extend({"Change": diff})
+            input_values.update({"Change": diff})
             diffs.append(diff)
-            pipe.hset("Names", name, record)
-            pipe.hset("Diffs", str(diff), record)
+            import pickle
+            pipe.hset("Names", name, pickle.dumps(record))
+            pipe.hset("Diffs", str(diff), pickle.dumps(record))
+            n += 2
+            if (n % 64) == 0:
+                pipe.execute()
+                pipe = red.pipeline()
         diffs.sort()
+        diffs.reverse()
         if len(diffs)>10:
             diffs = diffs[:10]
+        diffs = [str(diff) for diff in diffs]
         self.top = diffs
 
 if __name__ == "__main__":

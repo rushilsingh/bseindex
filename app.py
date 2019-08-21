@@ -35,25 +35,24 @@ class HomePage(object):
 
     @cherrypy.expose()
     def search(self, name):
+        
         bhavcopy.download()
         fname = bhavcopy.fname
 
         header = ""
         header += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
-        keys = red.keys("*Name*")
-        matches = []
-        pattern = re.compile(".*[A-Za-z]([0-9]+)")
         output = []
         values = []
-        search = "*" + key + "*"
+        search = "*" + name  + "*"
         cursor = 0
         while True:
             cursor, value = red.hscan("Names", cursor, search, 1000)
             if cursor == 0:
                 break
-            if value != {}:
-                values.append(value)
+            if value:
+                import pickle
+                values.append(pickle.loads(value).decode(errors='replace'))
         output = values
 
         tmpl = env.get_template("results.html")
@@ -67,16 +66,23 @@ class BhavCopyPage(object):
         bhavcopy.download()
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
         top = bhavcopy.top 
+        print(top)
         output = []
-        for elem in top:
+        cursor = 0
+        for search in top:
+            print(search)
             while True:
-            cursor, value = red.hscan("Diffs", cursor, search, 1000)
-            if cursor == 0:
-                break
-            if value != {}:
-                output.append(value)
-        header += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+                cursor, value = red.hscan("Diffs", cursor, search, 1000)
+                if cursor == 0:
+                    break
+                if value:
+                    import pickle
+                    output.append(pickle.loads(value).decode(errors='replace'))
+                    break
+        header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         data = {"header": header, "output": output}
+        
+        tmpl = env.get_template("results.html")
         return tmpl.render(data=data)
 
 root = HomePage()
