@@ -6,13 +6,15 @@
 {% if data.output | length == 0 %}
 <tr> No results </tr>
 {% else %}
-{% for element in data.output[0] %}
-    <th><b>{{element}}</th>
+<th>
+{% for column in data.table_header %}
+   <td>{{column}}</td>
 {% endfor %}
+</th>
 {% for row in data.output %}
      <tr>
-    {% for key, value in row.items() %}
-        <td>{{value}}</td>
+     {% for key in data.table_header %}
+        <td> row.{{key}} </td>
     {% endfor %}
     </tr>
 {% endfor %}

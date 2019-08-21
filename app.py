@@ -6,6 +6,7 @@ import redis
 import os
 from jinja2 import Environment, FileSystemLoader
 env = Environment(loader=FileSystemLoader('html'))
+table_header = ["Code", "Name", "Open", "Close", "High", "Low", "Change"]
 
 config = {
 
@@ -30,7 +31,7 @@ class HomePage(object):
     @cherrypy.expose
     def index(self):
         tmpl = env.get_template('index.html')
-        return tmpl.render(data=None)
+        return tmpl.render()
 
 
     @cherrypy.expose()
@@ -39,14 +40,14 @@ class HomePage(object):
         bhavcopy.download()
         fname = bhavcopy.fname
 
-        header = ""
-        header += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
+        tmpl = env.get_template("results.html")
+        header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
         
         #red = redis.Redis()
         if name == "":
-            data = {"header": header, "output": {}}
+            data = {"header": header, "table_header": table_header, "output": {}}
             return tmpl.render(data=data)
         
         output = []
@@ -62,18 +63,18 @@ class HomePage(object):
             if cursor == 0:
                 break
         
-        tmpl = env.get_template("results.html")
-        data = {"header": header, "output": output}
+        data = {"header": header, "table_header": table_header, "output": output}
         return tmpl.render(data=data)
 
     @cherrypy.expose
     def rank(self, number):
         
+        tmpl = env.get_template("results.html")
         header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         try:
             number = int(number)
         except:
-            return {"header": header, output:"Invalid input"}
+            return tmple.render({"header": header, "output":"Invalid input"})
         
         bhavcopy.download()
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
@@ -94,9 +95,7 @@ class HomePage(object):
                             break
                 if cursor == 0:
                     break
-        data = {"header": header, "output": output}
-        
-        tmpl = env.get_template("results.html")
+        data = {"header": header, "table_header": table_header,  "output": output}
         return tmpl.render(data=data)
 
 class BhavCopyPage(object):
@@ -108,7 +107,6 @@ class BhavCopyPage(object):
 
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
         #red = redis.Redis() 
-        top = bhavcopy.top[:10] 
         output = []
         cursor = 0
         entries = 0
@@ -119,9 +117,6 @@ class BhavCopyPage(object):
                 for key in value:
                     entry = json.loads(value[key])
                     output.append(entry)
-                    entries += 1
-                    if entries >= 10:
-                        break
             if cursor == 0:
                 break
         
