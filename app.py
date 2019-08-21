@@ -30,6 +30,7 @@ config = {
 class HomePage(object):
     @cherrypy.expose
     def index(self):
+        bhavcopy.download()
         tmpl = env.get_template('index.html')
         return tmpl.render()
 
@@ -69,6 +70,7 @@ class HomePage(object):
     @cherrypy.expose
     def rank(self, number):
         
+        bhavcopy.download()
         tmpl = env.get_template("results.html")
         header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         try:
@@ -130,4 +132,5 @@ root.bhavcopy = BhavCopyPage()
 
 if __name__ == '__main__':
     bhavcopy = BhavCopy()
+    bhavcopy.download()
     cherrypy.quickstart(root, "/", config=config)
