@@ -1,5 +1,4 @@
 import json
-import re
 import cherrypy
 from bhavcopy import BhavCopy
 import redis
@@ -37,22 +36,20 @@ class HomePage(object):
 
     @cherrypy.expose()
     def search(self, name):
-        
+
         bhavcopy.download()
-        fname = bhavcopy.fname
 
         tmpl = env.get_template("results.html")
         header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
-        
+
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
-        
+
         #red = redis.Redis()
         if name == "":
             data = {"header": header, "table_header": table_header, "output": {}}
             return tmpl.render(data=data)
-        
+
         output = []
-        values = []
         search = "*" + name.upper()  + "*"
         cursor = 0
         while True:
@@ -63,25 +60,27 @@ class HomePage(object):
                     output.append(entry)
             if cursor == 0:
                 break
-        
+
         data = {"header": header, "table_header": table_header, "output": output}
         return tmpl.render(data=data)
 
     @cherrypy.expose
     def rank(self, number):
-        
+
         bhavcopy.download()
         tmpl = env.get_template("results.html")
         header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
         try:
             number = int(number)
-        except:
+            if number<0:
+                raise ValueError
+        except ValueError:
             return tmpl.render(data={"header": header, "table_header": table_header, "output":"Invalid input"})
-        
+
         bhavcopy.download()
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
-        #red = redis.Redis() 
-        top = bhavcopy.top[:number] 
+        #red = redis.Redis()
+        top = bhavcopy.top[:number]
         output = []
         cursor = 0
         entries = 0
@@ -108,10 +107,9 @@ class BhavCopyPage(object):
         header = "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
 
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
-        #red = redis.Redis() 
+        #red = redis.Redis()
         output = []
         cursor = 0
-        entries = 0
         search = "*"
         while True:
             cursor, value = red.hscan("Names", cursor, search, 1000)
@@ -121,9 +119,9 @@ class BhavCopyPage(object):
                     output.append(entry)
             if cursor == 0:
                 break
-        
+
         data = {"header": header, "table_header": table_header, "output": output}
-        
+
         tmpl = env.get_template("results.html")
         return tmpl.render(data=data)
 

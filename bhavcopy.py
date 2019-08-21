@@ -58,12 +58,12 @@ class BhavCopy(object):
 
         lists = parser.ParseText(self.text)
         parsed = []
-        for i in range(len(lists)):
+
+        for i in enumerate(lists):
             elem = {}
             for j in range(len(parser.header)):
                 elem[parser.header[j]] = lists[i][j]
             parsed.append(elem)
-        index = 1
 
         red = redis.from_url(os.environ.get('REDIS_URL'), decode_responses=True)
         #red = redis.Redis()
