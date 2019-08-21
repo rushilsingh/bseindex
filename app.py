@@ -45,21 +45,16 @@ class HomePage(object):
         matches = []
         pattern = re.compile(".*[A-Za-z]([0-9]+)")
         output = []
-        max = None
-        for key in keys:
-            value = red.mget(key)[0]
-            if str(name).lower() in str(value).lower():
-                match = pattern.match(str(key)).groups()[0]
-                matches.append(match)
-        for match in matches:
-            row = {}
-            keys = red.keys("*[A-Za-z]%s" % match)
-            keys.sort()
-            values = red.mget(keys)
-            del_string = len(match)
-            for i in range(len(keys)):
-                row[str(keys[i][:-del_string])] = values[i]
-            output.append(row)
+        values = []
+        search = "*" + key + "*"
+        cursor = 0
+        while True:
+            cursor, value = red.hscan("Names", cursor, search, 1000)
+            if cursor == 0:
+                break
+            if value != {}:
+                values.append(value)
+        output = values
 
         tmpl = env.get_template("results.html")
         data = {"header": header, "output": output}
@@ -71,43 +66,16 @@ class BhavCopyPage(object):
     def index(self):
         bhavcopy.download()
         red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
+        top = bhavcopy.top 
         output = []
-        dictionary = {}
-        index = 1
-        max = None
-        while True:
-            keys = red.keys('*Change%s' % (index))
-            if len(keys) == 0:
+        for elem in top:
+            while True:
+            cursor, value = red.hscan("Diffs", cursor, search, 1000)
+            if cursor == 0:
                 break
-            key = keys[0]
-            value = red.mget(key)[0]
-            output.append(value)
-            dictionary[index] = value
-            index += 1
-        output.sort()
-        output.reverse()
-        output = output[0:10]
-        results = []
-        index = 0
-        for value in output:
-            for key in dictionary:
-                if dictionary[key] == value:
-                    results.append(key)
-                    break
-        output = []
-        header = ""
+            if value != {}:
+                output.append(value)
         header += "<b>" + "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8] + "</b><br /><br />"
-        #serial = 1
-        for index in results:
-            row = {}
-            keys = red.keys("*[A-Za-z]%s" % index)
-            keys.sort()
-            values = red.mget(keys)
-            del_string = len(str(index))
-            for i in range(len(keys)):
-                row[str(keys[i][:-del_string])] = str(values[i])
-            output.append(row)
-        tmpl = env.get_template('results.html')
         data = {"header": header, "output": output}
         return tmpl.render(data=data)
 

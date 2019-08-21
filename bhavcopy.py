@@ -69,33 +69,24 @@ class BhavCopy(object):
         red.flushdb()
         pipe = red.pipeline()
         n = 1
+        diffs = []
         for record in parsed:
-            for key in record:
-                val = "\"" + record[key] + "\"" if " " in record[key] else record[key]
-                actual_key = key + str(index)
-                pipe.set(actual_key, val)
-                n = n + 1
-                if (n % 64) == 0:
-                    pipe.execute()
-                    pipe = red.pipeline()
-            index += 1
-        final = index
-        index = 1
-        while True and index<=final:
-            keys = red.keys('*[A-Za-z]%s' % (index))
-            if len(keys) == 0:
-                break
-            open_index = red.keys('Open%s' % index)
-            open_index = red.mget(open_index[0])[0]
-            close_index = red.keys('Close%s' % index)
-            close_index = red.mget(close_index[0])[0]
-            open_index = float(open_index)
-            diff = float(close_index) - float(open_index)
+            name = record["Name"]
+            open_value = float(record["Open"]
+            close_value = float(record["Close"])
+            diff = open_value - close_value
             diff = (diff/open_index) * 100.00000
-            change = diff
-            red.set("Change"+str(index), str(change))
-            index += 1
-
+            name = "\"" + name + "\"" if " " in name else name
+            from copy import deepcopy
+            input_values = deepcopy(record)
+            input_values.extend({"Change": diff})
+            diffs.append(diff)
+            pipe.hset("Names", name, record)
+            pipe.hset("Diffs", str(diff), record)
+        diffs.sort()
+        if len(diffs)>10:
+            diffs = diffs[:10]
+        self.top = diffs
 
 if __name__ == "__main__":
     bhavcopy = BhavCopy()
