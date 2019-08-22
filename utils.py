@@ -30,7 +30,7 @@ def search(name, full=False):
 
     return output
 
-def rank(number, top=[]):
+def rank(number, **kw):
 
     try:
         number = int(number)
@@ -41,6 +41,9 @@ def rank(number, top=[]):
 
     red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
     #red = redis.Redis()
+    top = kw.get("top", None)
+    if top is None:
+        return []
     top = top[:number]
     output = []
     cursor = 0
