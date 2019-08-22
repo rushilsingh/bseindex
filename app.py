@@ -25,6 +25,65 @@ config = {
     }
 }
 
+def search(name):
+    
+    bhavcopy.download()
+    header = "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8]
+
+    red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
+
+    #red = redis.Redis()
+    if name == "":
+        data = {"header": header, "table_header": table_header, "output": {}}
+        return data
+
+    output = []
+    search = "*" + name.upper()  + "*"
+    cursor = 0
+    while True:
+        cursor, value = red.hscan("Names", cursor, search, 1000)
+        if value != {}:
+            for key in value:
+                entry = json.loads(value[key])
+                output.append(entry)
+        if cursor == 0:
+            break
+
+    data = {"header": header, "table_header": table_header, "output": output}
+    return data
+
+def rank(number):
+    
+    bhavcopy.download()
+    header = "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8]
+    tmpl = env.get_template("results.html")
+    try:
+        number = int(number)
+        if number<0:
+            raise ValueError
+    except ValueError:
+        return {"header": header, "table_header": table_header, "output":"Invalid input"}
+
+    red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
+    #red = redis.Redis()
+    top = bhavcopy.top[:number]
+    output = []
+    cursor = 0
+    entries = 0
+    for search in top:
+        while True:
+            cursor, value = red.hscan("Diffs", cursor, search, 1000)
+            if value != {}:
+                for key in value:
+                    entry = json.loads(value[key])
+                    output.append(entry)
+                    entries += 1
+                    if entries >= 10:
+                        break
+            if cursor == 0:
+                break
+    data = {"header": header, "table_header": table_header,  "output": output}
+    return data
 
 class HomePage(object):
     @cherrypy.expose
@@ -36,92 +95,23 @@ class HomePage(object):
 
     @cherrypy.expose()
     def search(self, name):
-
-        bhavcopy.download()
-
+        data = search(name)
         tmpl = env.get_template("results.html")
-        header = "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8]
-
-        red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
-
-        #red = redis.Redis()
-        if name == "":
-            data = {"header": header, "table_header": table_header, "output": {}}
-            return tmpl.render(data=data)
-
-        output = []
-        search = "*" + name.upper()  + "*"
-        cursor = 0
-        while True:
-            cursor, value = red.hscan("Names", cursor, search, 1000)
-            if value != {}:
-                for key in value:
-                    entry = json.loads(value[key])
-                    output.append(entry)
-            if cursor == 0:
-                break
-
-        data = {"header": header, "table_header": table_header, "output": output}
         return tmpl.render(data=data)
 
     @cherrypy.expose
     def rank(self, number):
 
-        bhavcopy.download()
-        header = "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8]
+        data = rank(number)
         tmpl = env.get_template("results.html")
-        try:
-            number = int(number)
-            if number<0:
-                raise ValueError
-        except ValueError:
-            return tmpl.render(data={"header": header, "table_header": table_header, "output":"Invalid input"})
-
-        bhavcopy.download()
-        red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
-        #red = redis.Redis()
-        top = bhavcopy.top[:number]
-        output = []
-        cursor = 0
-        entries = 0
-        for search in top:
-            while True:
-                cursor, value = red.hscan("Diffs", cursor, search, 1000)
-                if value != {}:
-                    for key in value:
-                        entry = json.loads(value[key])
-                        output.append(entry)
-                        entries += 1
-                        if entries >= 10:
-                            break
-                if cursor == 0:
-                    break
-        data = {"header": header, "table_header": table_header,  "output": output}
         return tmpl.render(data=data)
 
 class BhavCopyPage(object):
 
     @cherrypy.expose
     def index(self):
-        bhavcopy.download()
-        header = "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8]
 
-        red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
-        #red = redis.Redis()
-        output = []
-        cursor = 0
-        search = "*"
-        while True:
-            cursor, value = red.hscan("Names", cursor, search, 1000)
-            if value != {}:
-                for key in value:
-                    entry = json.loads(value[key])
-                    output.append(entry)
-            if cursor == 0:
-                break
-
-        data = {"header": header, "table_header": table_header, "output": output}
-
+        data = rank(10)
         tmpl = env.get_template("results.html")
         return tmpl.render(data=data)
 
