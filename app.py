@@ -1,11 +1,10 @@
-import json
 import cherrypy
 from bhavcopy import BhavCopy
-import redis
 import os
 from jinja2 import Environment, FileSystemLoader
+from utils import search, rank
+
 env = Environment(loader=FileSystemLoader('html'), autoescape=True)
-table_header = ["Code", "Name", "Open", "Close", "High", "Low", "Change"]
 
 config = {
 
@@ -25,87 +24,35 @@ config = {
     }
 }
 
-def search(name, full=False):
-    
+def reload():
     bhavcopy.download()
-    header = "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8]
-    if full:
-        search = "*"
-    else:
-        if name == "":
-            data = {"header": header, "table_header": table_header, "output": {}}
-            return data
-        else:
-            search = "*" + name.upper() +"*"
-    output = []
-    cursor = 0
+    fname = bhavcopy.fname
+    header = "Date: " + fname[2:4] + "-" + fname[4:6] + "-" + fname[6:8]
+    table_header = ["Code", "Name", "Open", "Close", "High", "Low", "Change"]
+    return header, table_header
 
-    red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
-    #red = redis.Redis()
-
-    while True:
-        cursor, value = red.hscan("Names", cursor, search, 1000)
-        if value != {}:
-            for key in value:
-                entry = json.loads(value[key])
-                output.append(entry)
-        if cursor == 0:
-            break
-
-    data = {"header": header, "table_header": table_header, "output": output}
-    return data
-
-def rank(number):
+def process(fnc, arg, **kw):
+    header, table_header = reload()
+    output = fnc(arg, **kw)
+    return {"output": output, "header": header, "table_header": table_header}
     
-    bhavcopy.download()
-    header = "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8]
-    tmpl = env.get_template("results.html")
-    try:
-        number = int(number)
-        if number<0:
-            raise ValueError
-    except ValueError:
-        return {"header": header, "table_header": table_header, "output":"Invalid input"}
-
-    red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
-    #red = redis.Redis()
-    top = bhavcopy.top[:number]
-    output = []
-    cursor = 0
-    entries = 0
-    for search in top:
-        while True:
-            cursor, value = red.hscan("Diffs", cursor, search, 1000)
-            if value != {}:
-                for key in value:
-                    entry = json.loads(value[key])
-                    output.append(entry)
-                    entries += 1
-                    if entries >= 10:
-                        break
-            if cursor == 0:
-                break
-    data = {"header": header, "table_header": table_header,  "output": output}
-    return data
-
 class HomePage(object):
     @cherrypy.expose
     def index(self):
-        bhavcopy.download()
         tmpl = env.get_template('index.html')
         return tmpl.render()
 
 
     @cherrypy.expose()
     def search(self, name):
-        data = search(name)
+        data = process(search, name)
         tmpl = env.get_template("results.html")
         return tmpl.render(data=data)
 
     @cherrypy.expose
     def rank(self, number):
-
-        data = rank(number)
+        
+        data = process(rank, number, top=bhavcopy.top)
         tmpl = env.get_template("results.html")
         return tmpl.render(data=data)
 
@@ -113,8 +60,7 @@ class BhavCopyPage(object):
 
     @cherrypy.expose
     def index(self):
-
-        data = search("", full=True)
+        data = process(search, "", full=True)
         tmpl = env.get_template("results.html")
         return tmpl.render(data=data)
 
