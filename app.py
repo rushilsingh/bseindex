@@ -9,7 +9,7 @@ env = Environment(loader=FileSystemLoader('html'), autoescape=True)
 config = {
 
     'global': {
-'server.socket_host': '0.0.0.0',
+        'server.socket_host': '0.0.0.0',
         'server.socket_port': int(os.environ.get('PORT', 5000)),
     },
 
@@ -32,37 +32,39 @@ def reload():
     return header, table_header
 
 def process(fnc, arg, **kw):
+    if fnc is None:
+        return None
     header, table_header = reload()
     output = fnc(arg, **kw)
     return {"output": output, "header": header, "table_header": table_header}
-    
+
+def render(template, fnc=None, arg=None, **kw):
+    return env.get_template(template).render(data=process(fnc, arg, **kw))
+
 class HomePage(object):
+
+    @staticmethod
     @cherrypy.expose
-    def index(self):
-        tmpl = env.get_template('index.html')
-        return tmpl.render()
+    def index():
+        return render("index.html")
 
-
+    @staticmethod
     @cherrypy.expose()
-    def search(self, name):
-        data = process(search, name)
-        tmpl = env.get_template("results.html")
-        return tmpl.render(data=data)
+    def search(name):
+        return render("results.html", search, name)
 
+    @staticmethod
     @cherrypy.expose
-    def rank(self, number):
-        
-        data = process(rank, number, top=bhavcopy.top)
-        tmpl = env.get_template("results.html")
-        return tmpl.render(data=data)
+    def rank(number):
+
+        return render("results.html", rank, number, top=bhavcopy.top)
 
 class BhavCopyPage(object):
 
+    @staticmethod
     @cherrypy.expose
-    def index(self):
-        data = process(search, "", full=True)
-        tmpl = env.get_template("results.html")
-        return tmpl.render(data=data)
+    def index():
+        return render("results.html", search, "", full=True)
 
 root = HomePage()
 root.bhavcopy = BhavCopyPage()

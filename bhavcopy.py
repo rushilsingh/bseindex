@@ -17,18 +17,29 @@ class BhavCopy(object):
         self.timedelta = 0
         self.fname = None
         self.top = []
+
     def download(self):
 
+        """ Download fresh file from server.
+            Check date.
+            If file has same date as our current file,
+            throw away the data. """
+
+        # Retry until successful response
         while(self.response is None or self.response.status_code != 200):
             self.date_string = self.get_date_string()
             self.url = self.base_url.format(self.date_string)
             self.response = requests.get(self.url, stream=True)
 
             self.timedelta += 1
-        self.timedelta = 0
+
+        self.timedelta = 0 # Reset timedelta
 
         fname = self.base_fname.format(self.date_string)
-        if self.fname != fname:
+
+        # Check if first time, or if new file available
+
+        if self.fname is None or self.fname != fname:
             self.fname = fname
             z = zipfile.ZipFile(io.BytesIO(self.response.content))
             z.extractall()
@@ -39,6 +50,9 @@ class BhavCopy(object):
 
 
     def get_date_string(self):
+        """ Get datestring in appropriate format from current time in IST
+            and current timedelta attached to BhavCopy object
+        """
 
         stamp = datetime.datetime.now(pytz.timezone("Asia/Kolkata")) - datetime.timedelta(days=self.timedelta)
         day = str(stamp.day) if len(str(stamp.day))==2 else (str(0) + str(stamp.day))
@@ -64,6 +78,7 @@ class BhavCopy(object):
             for j,_ in enumerate(parser.header):
                 elem[parser.header[j]] = lists[i][j]
             parsed.append(elem)
+        self.content = parsed
 
         red = redis.from_url(os.environ.get('REDIS_URL'), decode_responses=True)
         #red = redis.Redis()
@@ -71,7 +86,7 @@ class BhavCopy(object):
         pipe = red.pipeline()
         n = 0
         diffs = []
-        for record in parsed:
+        for record in self.content:
             name = record["Name"]
             open_value = float(record["Open"])
             close_value = float(record["Close"])
