@@ -25,21 +25,24 @@ config = {
     }
 }
 
-def search(name):
+def search(name, full=False):
     
     bhavcopy.download()
     header = "Date: " + bhavcopy.fname[2:4] + "-" + bhavcopy.fname[4:6] + "-" + bhavcopy.fname[6:8]
+    if full:
+        search = "*"
+    else:
+        if name == "":
+            data = {"header": header, "table_header": table_header, "output": {}}
+            return data
+        else:
+            search = "*" + name.upper() +"*"
+    output = []
+    cursor = 0
 
     red = redis.from_url(os.environ.get("REDIS_URL"), decode_responses=True)
-
     #red = redis.Redis()
-    if name == "":
-        data = {"header": header, "table_header": table_header, "output": {}}
-        return data
 
-    output = []
-    search = "*" + name.upper()  + "*"
-    cursor = 0
     while True:
         cursor, value = red.hscan("Names", cursor, search, 1000)
         if value != {}:
@@ -111,7 +114,7 @@ class BhavCopyPage(object):
     @cherrypy.expose
     def index(self):
 
-        data = rank(10)
+        data = search("", full=True)
         tmpl = env.get_template("results.html")
         return tmpl.render(data=data)
 
